@@ -1,5 +1,3 @@
-//hey cool.
-autoScrollFlag = false;
 
 (function($) {
 
@@ -9,6 +7,7 @@ autoScrollFlag = false;
         sidebar = $(".sidebar");
         large = $(".large");
         anchorName = "data-anchor";
+        autoScrollFlag = false; //hack - flag to prevent the URL from getting updated when it shouldn't.
         //we're going to make a database for all of the elements.
         pairs = getPairs($(".sidebar-element"), $(".tile-element"), $(".large-element"));
         setupTiles(pairs, $(".animation-layer"));
