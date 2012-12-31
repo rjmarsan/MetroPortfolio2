@@ -370,5 +370,13 @@ var setupTopBar = function() {
             topBarHover();
         }
     });
+    $(window).scroll(function() {
+        var top = $(window).scrollTop();
+        if (top <= 0) {
+            topBarFixed();
+        } else {
+            topBarHover();
+        }
+    });
 
 }
