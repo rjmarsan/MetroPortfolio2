@@ -11,25 +11,37 @@
 (function($) {
     var params = {};
     var data = {};
+    var state = { 
+        home: false,
+        currentPair: {},
+    };
+
+    var methods = {
+        state : function() {
+            return state;
+        },
+    };
 
     $.fn.fancynav = function( options ) {
-        params = $.extend( {
-            'tilesQuery'     : '.tiles',
-            'sidebarQuery'   : '.sidebar',
-            'largeQuery'     : '.large',
-            'anchorName'     : 'data-anchor',
-            'doAnimation'    : true,
-            'homeCallback'   : function() {},
-            'detailsCallback': function() {},
+        if (methods[options]) { 
+            return methods[ options ].apply( this, Array.prototype.slice.call( arguments, 1 ));
+        } else {
+            params = $.extend( {
+                'tilesQuery'     : '.tiles',
+                'sidebarQuery'   : '.sidebar',
+                'largeQuery'     : '.large',
+                'anchorName'     : 'data-anchor',
+                'anchorScroll'   : false,         //update page while scrolling
+                'doAnimation'    : true,
+                'homeCallback'   : function() {},
+                'detailsCallback': function() {},
 
-        }, options);
+            }, options);
 
-        setup();
+            setup();
+        }
         return this;
     };
-    $(function() {
-        setup();
-    });
 
     var setup = function() {
         /* Some script-wide parameters */
@@ -120,6 +132,7 @@
         data.tiles.fadeOut(time);
         data.sidebar.dequeue().fadeTo(time, 1);
         data.large.fadeIn(time);
+        state.home = false;
     };
 
     /*
@@ -131,6 +144,7 @@
         data.sidebar.dequeue().fadeTo(1000, 0);
         preventScrollWatchingFor(2000);
         data.large.fadeOut(1000);
+        state.home = true;
     };
 
 
@@ -151,6 +165,7 @@
     var actionGoHome = function() {
         removePage();
         goHome();
+        params.homeCallback();
     };
 
     /*
@@ -161,6 +176,8 @@
         preventScrollWatchingFor(time*4);
         $.scrollTo(pair.large, time);
         updatePage(pair, fromuser);
+        state.currentPair = pair;
+        params.detailsCallback(pair);
     };
 
     /** Page Events **/
@@ -181,8 +198,7 @@
             });
         }
         if (hasgonesomewhere == false) {
-            if (url) removePage();
-            goHome();
+            actionGoHome();
         }
     };
 
@@ -190,7 +206,8 @@
     * Action to set the URL bar to remove anything but the domain
     */
     function removePage () { 
-        if ("pushState" in history) {
+        var url = window.location.pathname.replace("/","");
+        if ("pushState" in history && url) {
             history.pushState({state: 1}, document.title, "/");
         }
     }
@@ -235,7 +252,7 @@
                     pair.sidebar.addClass(selectedClass);
                     selected = true; //don't select any more than one
                     //window.location.hash = pair.large.attr("data-anchor");
-                    //if (!data.autoScrollFlag) updatePage(pair);
+                    if (params.anchorScroll && !data.autoScrollFlag) updatePage(pair);
                 } else {
                     pair.sidebar.removeClass(selectedClass);
                 }
@@ -282,7 +299,10 @@
 * So this is when we actually use it
 **/
 $(function() {
+    var debugHome = function() { console.log("Went Home"); };
+    var debugDetails = function(pair) { console.log("Went Details "+pair.tile); };
     $().fancynav({
-
+        "homeCallback": debugHome,
+        "detailsCallback": debugDetails,
     });
 });
