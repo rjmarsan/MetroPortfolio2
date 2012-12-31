@@ -100,44 +100,6 @@ var goHome = function() {
 };
 
 
-/*
-* Handles what happens for every scroll event
-* This is a tricky bit of code.
-*/
-var setupScrolling = function(pairs, selectedClass) {
-    $(window).scroll(function() {
-        var selected = false;
-        $.each(pairs,function(index,pair) {
-            if (selected == false && inRange(pair.large)) {
-                pair.sidebar.addClass(selectedClass);
-                selected = true; //don't select any more than one
-                //window.location.hash = pair.large.attr("data-anchor");
-                //if (!autoScrollFlag) updatePage(pair);
-            } else {
-                pair.sidebar.removeClass(selectedClass);
-            }
-        });
-    });
-    $.each(pairs,function(index,pair) {
-        pair.sidebar.click(function() {
-            actionGoTo(pair, 300, true);
-        });
-    });
-};
-
-/*
-* Helper function to define what is 'in range' to mark as active
-*/
-var inRange = function(elem) {
-    var docViewTop = $(window).scrollTop();
-    var docViewBottom = docViewTop + $(window).height();
-    var docLine = (docViewTop*3+docViewBottom)/4;
-
-    var elemTop = elem.offset().top;
-    var elemBottom = elemTop + elem.height();
-    // THIS NEEDS TO BE MORE COMPLICATED
-    return ((elemBottom >= docLine) && (elemTop <= docLine));
-};
 
 
 /*
@@ -165,14 +127,6 @@ var actionGoTo = function(pair, time, fromuser) {
     preventScrollWatchingFor(time*4);
     $.scrollTo(pair.large, time);
     updatePage(pair, fromuser);
-};
-
-/*
-* Hack.
-*/
-var preventScrollWatchingFor = function(millis) {
-    autoScrollFlag = true;
-    setTimeout(function() { autoScrollFlag = false; }, millis);
 };
 
 /** Page Events **/
@@ -231,6 +185,60 @@ function updatePage(pair, forceback) {
         }
     }
 }
+
+
+/** Scrolling **/
+
+/*
+* Handles what happens for every scroll event
+* This is a tricky bit of code.
+*/
+var setupScrolling = function(pairs, selectedClass) {
+    $(window).scroll(function() {
+        var selected = false;
+        $.each(pairs,function(index,pair) {
+            if (selected == false && inRange(pair.large)) {
+                pair.sidebar.addClass(selectedClass);
+                selected = true; //don't select any more than one
+                //window.location.hash = pair.large.attr("data-anchor");
+                //if (!autoScrollFlag) updatePage(pair);
+            } else {
+                pair.sidebar.removeClass(selectedClass);
+            }
+        });
+    });
+    $.each(pairs,function(index,pair) {
+        pair.sidebar.click(function() {
+            actionGoTo(pair, 300, true);
+        });
+    });
+};
+
+/*
+* Helper function to define what is 'in range' to mark as active
+*/
+var inRange = function(elem) {
+    var docViewTop = $(window).scrollTop();
+    var docViewBottom = docViewTop + $(window).height();
+    var docLine = (docViewTop*3+docViewBottom)/4;
+
+    var elemTop = elem.offset().top;
+    var elemBottom = elemTop + elem.height();
+    // THIS NEEDS TO BE MORE COMPLICATED
+    return ((elemBottom >= docLine) && (elemTop <= docLine));
+};
+
+/*
+* Hack.
+*/
+var preventScrollWatchingFor = function(millis) {
+    autoScrollFlag = true;
+    setTimeout(function() { autoScrollFlag = false; }, millis);
+};
+
+
+
+
 })(jQuery);
 
 
