@@ -283,13 +283,13 @@ headerHeight = 75;
             var itemcenter = itemtop+itemheight;
             var containercenter = containerheight/2;
             var offset = itemcenter - containercenter;
-            offset = Math.max(0, offset);
             var lastitemtop = data.lastitem.sidebar.position().top;
             var lastheight = data.lastitem.sidebar.height();
             var totalheight = lastitemtop + lastheight ;
             if (offset + containerheight > totalheight) {
                 offset = totalheight-containerheight;
             }
+            offset = Math.max(0, offset);
 
 
 
