@@ -1,3 +1,4 @@
+headerHeight = 75;
 
 /*
  We wrap all of this in '(function($) {' so that it's all encapsulated.
@@ -58,6 +59,7 @@
 
         /* making a database for all of the elements */
         data.pairs = getPairs($(params.sidebarElems), $(params.tileElems), $(params.largeElems));
+        data.lastitem = data.pairs[data.pairs.length-1];
 
         /* Setting up all of the interactions */
         setupTiles(data.pairs, $(params.animationLayer));
@@ -255,7 +257,7 @@
             var selected = false;
             $.each(pairs,function(index,pair) {
                 if (selected == false && inRange(pair.large)) {
-                    pair.sidebar.addClass(selectedClass);
+                    selectPair(pair, selectedClass);
                     selected = true; //don't select any more than one
                     //window.location.hash = pair.large.attr("data-anchor");
                     if (params.anchorScroll && !data.autoScrollFlag) updatePage(pair);
@@ -269,6 +271,34 @@
                 actionGoTo(pair, 300, true);
             });
         });
+    };
+    var selectPair = function(pair, selectedClass) {
+        pair.sidebar.addClass(selectedClass);
+
+        if (pair != state.highlighted) {
+            console.log(pair.sidebar.html());
+            var itemtop = pair.sidebar.position().top;
+            var itemheight = pair.sidebar.height();
+            var containerheight = data.sidebar.height()-headerHeight;
+            var itemcenter = itemtop+itemheight;
+            var containercenter = containerheight/2;
+            var offset = itemcenter - containercenter;
+            offset = Math.max(0, offset);
+            var lastitemtop = data.lastitem.sidebar.position().top;
+            var lastheight = data.lastitem.sidebar.height();
+            var totalheight = lastitemtop + lastheight ;
+            if (offset + containerheight > totalheight) {
+                offset = totalheight-containerheight;
+            }
+
+
+
+            //offset = Math.max(lastitemtop+lastheight, offset);
+            console.log("Offset: "+offset);
+            data.sidebar.children(".sidebar-inner").stop(true).animate({"margin-top":-offset},300);
+            state.highlighted = pair;
+        }
+
     };
 
     /*
