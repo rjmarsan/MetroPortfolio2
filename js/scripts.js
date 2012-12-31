@@ -335,17 +335,22 @@ headerHeight = 75;
 * So this is when we actually use it
 **/
 $(function() {
-    var debugHome = function() { console.log("Went Home"); };
-    var debugDetails = function(pair) { console.log("Went Details "+pair.tile); };
+    var recheckTopbar = setupTopBar();
+    var wentHome = function() { 
+        recheckTopbar();
+    };
+    var wentDetails = function(pair) { 
+        recheckTopbar();
+    };
     $().fancynav({
-        "homeCallback": debugHome,
-        "detailsCallback": debugDetails,
+        "homeCallback": wentHome,
+        "detailsCallback": wentDetails,
     });
-    setupTopBar();
 });
 
 
 var setupTopBar = function() {
+    var tiles = $(".tiles");
     var topbar = $("header");
     var attop = true;
     var time = 600;
@@ -361,22 +366,35 @@ var setupTopBar = function() {
         topbar.css("border-bottom-style", "solid");
         attop = false;
     };
-    var tiles = $(".tiles");
-    tiles.scroll(function() {
+
+    var checkScrollTiles = function() {
+        if ($().fancynav("state").home == false) return;
+        console.log("Tiles scroll");
         var top = tiles.scrollTop();
         if (top <= 0) {
             topBarFixed();
         } else {
             topBarHover();
         }
-    });
-    $(window).scroll(function() {
+    };
+    var checkScrollWindow = function() {
+        if ($().fancynav("state").home == true) return;
+        console.log("Window scroll");
         var top = $(window).scrollTop();
         if (top <= 0) {
             topBarFixed();
         } else {
             topBarHover();
         }
-    });
+    };
 
+    tiles.scroll(checkScrollTiles);
+    $(window).scroll(checkScrollWindow);
+
+    var recheck = function() {
+        checkScrollTiles();
+        checkScrollWindow();
+    }
+
+    return recheck;
 }
