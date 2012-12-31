@@ -172,15 +172,15 @@ function updatePage(pair, forceback) {
     var curhash = loc.pathname.replace("/","");
     //console.log("Updating hash - current: "+curhash+ " new: "+newhash);
     if (newhash == curhash) {
-        console.log("No need to update");
+        //console.log("No need to update");
         return;
     }
     if ("pushState" in history) {
         if (!curhash || forceback) {
-            console.log("new location to "+newhash);
+            //console.log("new location to "+newhash);
             history.pushState({state: 1}, document.title, newhash);
         } else {
-            console.log("update location to "+newhash);
+            //console.log("update location to "+newhash);
             history.replaceState({state: 1}, document.title, newhash);
         }
     }
