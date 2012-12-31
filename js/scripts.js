@@ -1,23 +1,40 @@
 
+/*
+ We wrap all of this in '(function($) {' so that it's all encapsulated.
+ In our fancynav, we use a global variable named 'tiles'. If someone else decides to use that, we'd have a conflict.
+ But because it's wrapped in this function, we don't have to worry about that.
+
+ We also pass in the $ so we don't get any conflicts if someone decides to mess with $
+ (not really an issue - just being overcautious)
+*/
+
 (function($) {
 
     $(function() {
+        setup();
+    });
+
+    var setup = function() {
         /* Some script-wide parameters */
         tiles = $(".tiles");
         sidebar = $(".sidebar");
         large = $(".large");
         anchorName = "data-anchor";
         autoScrollFlag = false; //hack - flag to prevent the URL from getting updated when it shouldn't.
-        //we're going to make a database for all of the elements.
+
+        /* making a database for all of the elements */
         pairs = getPairs($(".sidebar-element"), $(".tile-element"), $(".large-element"));
+
+        /* Setting up all of the interactions */
         setupTiles(pairs, $(".animation-layer"));
         setupScrolling(pairs, "sidebar-selected");
         setupHome($(".sidebar-home"));
-        //This is called when the back button is pressed
+        /* event listener for when the back button is pressed */
         window.addEventListener("popstate", pageChange, false);
-        pageChange();
 
-    });
+        /* Read in the current page, and go to it. */
+        pageChange();
+    };
 
 
     /* 
