@@ -1,6 +1,8 @@
 //hey cool.
 autoScrollFlag = false;
 
+(function($) {
+
 $(function() {
     /* Some script-wide parameters */
     tiles = $(".tiles");
@@ -38,6 +40,7 @@ var getPairs = function(sidebar, tile, large) {
 var setupTiles = function(pairs, animationlayer) {
     $.each(pairs,function(index,pair) {
         pair.tile.click(function() {
+            //this is the transition animation
             var windowtop = $(window).scrollTop();
             var windowleft = $(window).scrollLeft();
             var tile = pair.tile;
@@ -98,7 +101,7 @@ var setupScrolling = function(pairs, selectedClass) {
                 pair.sidebar.addClass(selectedClass);
                 selected = true; //don't select any more than one
                 //window.location.hash = pair.large.attr("data-anchor");
-                //if (!autoScrollFlag) updateHash(pair);
+                //if (!autoScrollFlag) updatePage(pair);
             } else {
                 pair.sidebar.removeClass(selectedClass);
             }
@@ -130,14 +133,14 @@ var setupHome = function(element) {
 }
 
 var actionGoHome = function() {
-    removeHash();
+    removePage();
     goHome();
 };
 var actionGoTo = function(pair, time, fromuser) {
     bringInSidebarAndLarge(time*2);
     preventScrollWatchingFor(time*4);
     $.scrollTo(pair.large, time);
-    updateHash(pair, fromuser);
+    updatePage(pair, fromuser);
 };
 
 var preventScrollWatchingFor = function(millis) {
@@ -158,16 +161,16 @@ var pageChange = function(e) {
         });
     }
     if (hasgonesomewhere == false) {
-        if (url) removeHash();
+        if (url) removePage();
         goHome();
     }
 };
-function removeHash () { 
+function removePage () { 
     if ("pushState" in history) {
         history.pushState({state: 1}, document.title, "/");
     }
 }
-function updateHash(pair, forceback) {
+function updatePage(pair, forceback) {
     var loc = window.location;
     var newhash = pair.large.attr(anchorName);
     var curhash = loc.pathname.replace("/","");
@@ -186,4 +189,6 @@ function updateHash(pair, forceback) {
         }
     }
 }
+})(jQuery);
+
 
