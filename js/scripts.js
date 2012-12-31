@@ -3,14 +3,13 @@ autoScrollFlag = false;
 
 $(function() {
 
-
     pairs = getPairs();
     setupTiles(pairs, $(".animation-layer"));
     setupScrolling(pairs);
     setupHome();
-    //window.addEventListener("hashchange", hashChange, false);
-    window.addEventListener("popstate", hashChange, false);
-    hashChange();
+    //This is called when the back button is pressed
+    window.addEventListener("popstate", pageChange, false);
+    pageChange();
 
 });
 
@@ -141,7 +140,7 @@ var preventScrollWatchingFor = function(millis) {
     setTimeout(function() { autoScrollFlag = false; }, millis);
 };
 
-var hashChange = function(e) {
+var pageChange = function(e) {
     var url = window.location.pathname.replace("/","");
     console.log("New hash: "+url);
     var hasgonesomewhere = false;
