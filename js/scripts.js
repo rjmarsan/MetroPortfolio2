@@ -21,6 +21,10 @@ $(function() {
 });
 
 
+/* 
+* Grabs all the [sidebar element, tile element, large element] groups
+* and puts them in a list so we can play with them later 
+*/
 var getPairs = function(sidebar, tile, large) {
     var pairs = [];
     sidebar.each(function(index,element) {
@@ -37,6 +41,9 @@ var getPairs = function(sidebar, tile, large) {
 };
 
 
+/*
+* Sets up the interaction when a tile is clicked. does the animation thingie
+*/
 var setupTiles = function(pairs, animationlayer) {
     $.each(pairs,function(index,pair) {
         pair.tile.click(function() {
@@ -50,7 +57,7 @@ var setupTiles = function(pairs, animationlayer) {
             var sidex = side.offset().left - side.margin().left - side.padding().left - windowleft;
             var sidey = side.offset().top - side.margin().top - side.padding().top - windowtop;
             //console.log("tile: ("+tilex+","+tiley+") Sidebar: ("+sidex+","+sidey+")");
-            var clone = cloneElement(pair);
+            var clone = pair.tile.clone();
             //console.log(clone[0].classList);
             clone.css("position", "absolute");
             clone.css("top", tiley+"px");
@@ -72,18 +79,19 @@ var setupTiles = function(pairs, animationlayer) {
     });
 };
 
-
-var cloneElement = function(pair) {
-    return pair.tile.clone();
-            clone.offset(tile.offset());
-};
-
+/*
+* The fancy animation/transition from the 'home' view to the 'large' view
+*/
 var bringInSidebarAndLarge = function(time) {
     tiles.fadeOut(time);
     sidebar.dequeue().fadeTo(time, 1);
     large.fadeIn(time);
 };
 
+/*
+* The fancy animation/transition to the 'home' view from the 'large' view
+* the inverse of above
+*/
 var goHome = function() {
     tiles.fadeIn(1000);
     sidebar.dequeue().fadeTo(1000, 0);
@@ -92,7 +100,10 @@ var goHome = function() {
 };
 
 
-
+/*
+* Handles what happens for every scroll event
+* This is a tricky bit of code.
+*/
 var setupScrolling = function(pairs, selectedClass) {
     $(window).scroll(function() {
         var selected = false;
@@ -114,6 +125,9 @@ var setupScrolling = function(pairs, selectedClass) {
     });
 };
 
+/*
+* Helper function to define what is 'in range' to mark as active
+*/
 var inRange = function(elem) {
     var docViewTop = $(window).scrollTop();
     var docViewBottom = docViewTop + $(window).height();
@@ -126,16 +140,26 @@ var inRange = function(elem) {
 };
 
 
+/*
+* Set up how the user gets 'home'
+*/
 var setupHome = function(element) {
     element.click(function(e) {
         actionGoHome();
     });
 }
 
+/*
+* The actual action of 'going home'
+*/
 var actionGoHome = function() {
     removePage();
     goHome();
 };
+
+/*
+* The actual action of going to a particular page
+*/
 var actionGoTo = function(pair, time, fromuser) {
     bringInSidebarAndLarge(time*2);
     preventScrollWatchingFor(time*4);
@@ -143,11 +167,19 @@ var actionGoTo = function(pair, time, fromuser) {
     updatePage(pair, fromuser);
 };
 
+/*
+* Hack.
+*/
 var preventScrollWatchingFor = function(millis) {
     autoScrollFlag = true;
     setTimeout(function() { autoScrollFlag = false; }, millis);
 };
 
+/** Page Events **/
+
+/*
+* handles what happens when the URL changes
+*/
 var pageChange = function(e) {
     var url = window.location.pathname.replace("/","");
     //console.log("New hash: "+url);
@@ -165,11 +197,21 @@ var pageChange = function(e) {
         goHome();
     }
 };
+
+/*
+* Action to set the URL bar to remove anything but the domain
+*/
 function removePage () { 
     if ("pushState" in history) {
         history.pushState({state: 1}, document.title, "/");
     }
 }
+
+/*
+* Action to update the URL bar to go to a certain page.
+* If it's passed 'foo', and the domain is example.com,
+* the end result will be the URL bar saying example.com/foo
+*/
 function updatePage(pair, forceback) {
     var loc = window.location;
     var newhash = pair.large.attr(anchorName);
