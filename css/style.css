@@ -190,7 +190,9 @@ header {
  * 30px padding
  * 15px in between
  */
-@media (min-width: 0px) { /*the largest size: 6 columns */
+
+/* 6 columns and up */
+@media (min-width: 0px) { 
     .tiles-wrapper {
         width: 1490px;
     }
@@ -198,6 +200,7 @@ header {
         width: 1490px;
     }
 }
+/* 5 columns */
 @media (max-width: 1515px) {
     .tiles-wrapper {
         width: 1245px;
@@ -206,6 +209,7 @@ header {
         width: 1270px;
     }
 }
+/* 4 columns */
 @media (max-width: 1269px) {
     .tiles-wrapper {
         width: 995px;
@@ -214,6 +218,7 @@ header {
         width: 1025px;
     }
 }
+/* 3 columns */
 @media (max-width: 1024px) {
     .tiles-wrapper {
         width: 745px;
@@ -222,6 +227,7 @@ header {
         width: 780px;
     }
 }
+/* 2 columns */
 @media (max-width: 779px) {
     .tiles-wrapper {
         width: 495px;
@@ -230,6 +236,7 @@ header {
         width: 535px;
     }
 }
+/* 1 column */
 @media (max-width: 534px) {
     .tiles-wrapper {
         width: 245px;
