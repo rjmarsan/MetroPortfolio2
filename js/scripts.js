@@ -14,6 +14,7 @@ headerHeight = 75;
     var data = {};
     var state = { 
         home: false,
+        intransition: false,
         currentPair: {},
     };
 
@@ -139,7 +140,10 @@ headerHeight = 75;
     var bringInSidebarAndLarge = function(time) {
         data.tiles.fadeOut(time);
         data.sidebar.dequeue().fadeTo(time, 1);
-        data.large.fadeIn(time);
+        data.large.fadeIn(time, function() {
+            state.intransition = false;
+        });
+        state.intransition = true;
         state.home = false;
     };
 
@@ -151,7 +155,10 @@ headerHeight = 75;
         data.tiles.fadeIn(1000);
         data.sidebar.dequeue().fadeTo(1000, 0);
         preventScrollWatchingFor(2000);
-        data.large.fadeOut(1000);
+        data.large.fadeOut(1000, function() {
+            state.intransition = false;
+        });
+        state.intransition = true;
         state.home = true;
     };
 
@@ -354,17 +361,43 @@ var setupTopBar = function() {
     var topbar = $("header");
     var attop = true;
     var time = 600;
-    var topBarFixed = function() {
-        if (attop == true) return;
-        topbar.stop(true).animate({"background-color": "rgba(255,255,255,0)", "boxShadowBlur": "0px"}, time);
-        topbar.css("border-bottom-style", "dotted");
-        attop = true;
+    var firsttop = 0;
+    var lasttop = 0;
+    var lastdown = false;
+    var topBarFixed = function(top) {
+        if (attop == false) { 
+            topbar.stop(true).animate({"background-color": "rgba(255,255,255,0)", "boxShadowBlur": "0px"}, time);
+            topbar.css("border-bottom-style", "dotted");
+            topbar.css({"top":0});
+            attop = true;
+        }
     };
-    var topBarHover = function() {
-        if (attop == false) return;
-        topbar.stop(true).animate({"background-color": "rgba(250,250,250,0.96)", "boxShadowBlur":"15px"}, time);
-        topbar.css("border-bottom-style", "solid");
-        attop = false;
+    var topBarHover = function(top) {
+        if (attop == true) {
+            topbar.stop(true).animate({"background-color": "rgba(250,250,250,0.96)", "boxShadowBlur":"15px"}, time);
+            topbar.css("border-bottom-style", "solid");
+            attop = false;
+        }
+    };
+
+    var topBarPeek = function(top, actuallymove) {
+        console.log("Top: "+top);
+        if (actuallymove == false || (lasttop < top && lastdown == false) ) {
+            firsttop = top;
+            lastdown = true;
+        } else if (lasttop > top && lastdown == true) {
+            lastdown = false;
+            var newtop = top - topbar.height();
+            firstop = Math.max(newtop, firsttop);
+            firsttop = Math.max(0, firsttop);
+        }
+        lasttop = top;
+        var topdist = lasttop - firsttop;
+        topdist = Math.max(0, topdist);
+        if (actuallymove) topbar.css({"top":-topdist});
+    };
+    var topBarNotPeak = function() {
+        topbar.css({"top":0});
     };
 
     var checkScrollTiles = function() {
@@ -372,19 +405,24 @@ var setupTopBar = function() {
         console.log("Tiles scroll");
         var top = tiles.scrollTop();
         if (top <= 0) {
-            topBarFixed();
+            topBarFixed(top);
         } else {
-            topBarHover();
+            topBarHover(top);
         }
+        topBarNotPeak();
     };
     var checkScrollWindow = function() {
         if ($().fancynav("state").home == true) return;
         console.log("Window scroll");
         var top = $(window).scrollTop();
         if (top <= 0) {
-            topBarFixed();
+            topBarFixed(top);
         } else {
-            topBarHover();
+            topBarHover(top);
+            if ($().fancynav("state").intransition == false)
+                topBarPeek(top, true);
+            else
+                topBarPeek(top, false);
         }
     };
 
