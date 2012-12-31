@@ -2,11 +2,16 @@
 autoScrollFlag = false;
 
 $(function() {
-
-    pairs = getPairs();
+    /* Some script-wide parameters */
+    tiles = $(".tiles");
+    sidebar = $(".sidebar");
+    large = $(".large");
+    anchorName = "data-anchor";
+    //we're going to make a database for all of the elements.
+    pairs = getPairs($(".sidebar-element"), $(".tile-element"), $(".large-element"));
     setupTiles(pairs, $(".animation-layer"));
-    setupScrolling(pairs);
-    setupHome();
+    setupScrolling(pairs, "sidebar-selected");
+    setupHome($(".sidebar-home"));
     //This is called when the back button is pressed
     window.addEventListener("popstate", pageChange, false);
     pageChange();
@@ -14,15 +19,16 @@ $(function() {
 });
 
 
-var getPairs = function() {
+var getPairs = function(sidebar, tile, large) {
     var pairs = [];
-    $(".sidebar-element").each(function(index,element) {
-        pairs[index] = {sidebar:$(element)};
+    sidebar.each(function(index,element) {
+        pairs[index] = {};
+        pairs[index].sidebar = $(element);
     });
-    $(".tile-element").each(function(index,element) {
+    tile.each(function(index,element) {
         pairs[index].tile = $(element);
     });
-    $(".large-element").each(function(index,element) {
+    large.each(function(index,element) {
         pairs[index].large = $(element);
     });
     return pairs;
@@ -40,9 +46,9 @@ var setupTiles = function(pairs, animationlayer) {
             var tiley = tile.offset().top - tile.margin().top - tile.padding().top - windowtop;
             var sidex = side.offset().left - side.margin().left - side.padding().left - windowleft;
             var sidey = side.offset().top - side.margin().top - side.padding().top - windowtop;
-            console.log("tile: ("+tilex+","+tiley+") Sidebar: ("+sidex+","+sidey+")");
+            //console.log("tile: ("+tilex+","+tiley+") Sidebar: ("+sidex+","+sidey+")");
             var clone = cloneElement(pair);
-            console.log(clone[0].classList);
+            //console.log(clone[0].classList);
             clone.css("position", "absolute");
             clone.css("top", tiley+"px");
             clone.css("left", tilex+"px");
@@ -70,31 +76,31 @@ var cloneElement = function(pair) {
 };
 
 var bringInSidebarAndLarge = function(time) {
-    $(".tiles").fadeOut(time);
-    $(".sidebar").dequeue().fadeTo(time, 1);
-    $(".large").fadeIn(time);
+    tiles.fadeOut(time);
+    sidebar.dequeue().fadeTo(time, 1);
+    large.fadeIn(time);
 };
 
 var goHome = function() {
-    $(".tiles").fadeIn(1000);
-    $(".sidebar").dequeue().fadeTo(1000, 0);
+    tiles.fadeIn(1000);
+    sidebar.dequeue().fadeTo(1000, 0);
     preventScrollWatchingFor(2000);
-    $(".large").fadeOut(1000);
+    large.fadeOut(1000);
 };
 
 
 
-var setupScrolling = function(pairs) {
+var setupScrolling = function(pairs, selectedClass) {
     $(window).scroll(function() {
         var selected = false;
         $.each(pairs,function(index,pair) {
             if (selected == false && inRange(pair.large)) {
-                pair.sidebar.addClass("sidebar-selected");
+                pair.sidebar.addClass(selectedClass);
                 selected = true; //don't select any more than one
                 //window.location.hash = pair.large.attr("data-anchor");
                 //if (!autoScrollFlag) updateHash(pair);
             } else {
-                pair.sidebar.removeClass("sidebar-selected");
+                pair.sidebar.removeClass(selectedClass);
             }
         });
     });
@@ -117,8 +123,8 @@ var inRange = function(elem) {
 };
 
 
-var setupHome = function() {
-    $(".sidebar-home").click(function(e) {
+var setupHome = function(element) {
+    element.click(function(e) {
         actionGoHome();
     });
 }
@@ -131,7 +137,6 @@ var actionGoTo = function(pair, time, fromuser) {
     bringInSidebarAndLarge(time*2);
     preventScrollWatchingFor(time*4);
     $.scrollTo(pair.large, time);
-    //window.location.hash = pair.large.attr("data-anchor");
     updateHash(pair, fromuser);
 };
 
@@ -142,11 +147,11 @@ var preventScrollWatchingFor = function(millis) {
 
 var pageChange = function(e) {
     var url = window.location.pathname.replace("/","");
-    console.log("New hash: "+url);
+    //console.log("New hash: "+url);
     var hasgonesomewhere = false;
     if (url) {
         $.each(pairs,function(index,pair) {
-            if (pair.large.attr("data-anchor") == url) {
+            if (pair.large.attr(anchorName) == url) {
                 actionGoTo(pair, 300, false);
                 hasgonesomewhere = true;
             }
@@ -164,7 +169,7 @@ function removeHash () {
 }
 function updateHash(pair, forceback) {
     var loc = window.location;
-    var newhash = pair.large.attr("data-anchor");
+    var newhash = pair.large.attr(anchorName);
     var curhash = loc.pathname.replace("/","");
     //console.log("Updating hash - current: "+curhash+ " new: "+newhash);
     if (newhash == curhash) {
