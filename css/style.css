@@ -1,0 +1,113 @@
+/** Hey cool **/
+
+body {
+    width: 100%;
+    margin-top: 100px;
+}
+
+.animation-layer {
+    position: fixed;
+    z-index: 999;
+    width: 100%;
+    bottom: 0;
+    top: 0;
+    left: 0;
+    right: 0;
+    pointer-events:none; /* This is super important - it makes sure the clicks don't get intercepted by the animation layer*/
+}
+
+.content {
+    position: relative;
+    margin-left: 120px;
+    margin-right: 50px;
+    background-color: #111;
+}
+
+.tiles {
+    /*
+    position: absolute;
+    left: 0;
+    */
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    overflow: scroll;
+    -webkit-overflow-scrolling: touch;
+    height: 100%;
+    background-color: #991;
+    text-align: center;
+}
+
+.large {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    background-color: #191;
+}
+
+.sidebar {
+    position: fixed;
+    padding-left: 20px;
+    width: 80px;
+    background-color: #199;
+}
+
+.sidebar-element {
+    float: left;
+    width: 60px;
+    height: 60px;
+    margin-top: 10px;
+
+    background-color: #319;
+    line-height: 100px;
+    text-align: center;
+}
+
+.sidebar-selected {
+    background-color: #63A;
+}
+
+.tile-element {
+    display: inline-block;
+    width: 200px;
+    height: 200px;
+    margin: 25px;
+    
+    background-color: #931;
+    line-height: 200px;
+    text-align: center;
+}
+
+.large-element {
+    float: left;
+    width: 100%;
+    height: 500px;
+    border-bottom:5px solid #888;
+
+    
+    background-color: #931;
+    line-height: 500px;
+    text-align: center;
+}
+
+
+
+
+
+/*** concept classes ***/
+.initially-gone {
+    display: none;
+}
+.initially-hidden {
+    opacity: 0;
+}
+/* this guy 'inserts' a dummy div after any element with class clearable, and styles it like this */
+.clearable:after {
+    content: ".";
+    display: block;
+    height: 0;
+    clear: both;
+    visibility: hidden;
+}
