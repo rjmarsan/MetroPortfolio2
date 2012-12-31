@@ -30,9 +30,15 @@
                 'tilesQuery'     : '.tiles',
                 'sidebarQuery'   : '.sidebar',
                 'largeQuery'     : '.large',
+                'tileElems'      : '.tile-element',
+                'sidebarElems'   : '.sidebar-element',
+                'largeElems'     : '.large-element',
                 'anchorName'     : 'data-anchor',
+                'animationLayer' : '.animation-layer',
+                'sidebarSelected': 'sidebar-selected',
+                'sidebarHome'    : '.homelink',
                 'anchorScroll'   : false,         //update page while scrolling
-                'doAnimation'    : true,
+                'doAnimation'    : false,
                 'homeCallback'   : function() {},
                 'detailsCallback': function() {},
 
@@ -51,12 +57,12 @@
         data.large = $(params.largeQuery);
 
         /* making a database for all of the elements */
-        data.pairs = getPairs($(".sidebar-element"), $(".tile-element"), $(".large-element"));
+        data.pairs = getPairs($(params.sidebarElems), $(params.tileElems), $(params.largeElems));
 
         /* Setting up all of the interactions */
-        setupTiles(data.pairs, $(".animation-layer"));
-        setupScrolling(data.pairs, "sidebar-selected");
-        setupHome($(".sidebar-home"));
+        setupTiles(data.pairs, $(params.animationLayer));
+        setupScrolling(data.pairs, params.sidebarSelected);
+        setupHome($(params.sidebarHome));
         /* event listener for when the back button is pressed */
         window.addEventListener("popstate", pageChange, false);
 
@@ -305,4 +311,34 @@ $(function() {
         "homeCallback": debugHome,
         "detailsCallback": debugDetails,
     });
+    setupTopBar();
 });
+
+
+var setupTopBar = function() {
+    var topbar = $("header");
+    var attop = true;
+    var time = 600;
+    var topBarFixed = function() {
+        if (attop == true) return;
+        topbar.stop(true).animate({"background-color": "rgba(255,255,255,0)", "boxShadowBlur": "0px"}, time);
+        topbar.css("border-bottom-style", "dotted");
+        attop = true;
+    };
+    var topBarHover = function() {
+        if (attop == false) return;
+        topbar.stop(true).animate({"background-color": "rgba(250,250,250,0.96)", "boxShadowBlur":"15px"}, time);
+        topbar.css("border-bottom-style", "solid");
+        attop = false;
+    };
+    var tiles = $(".tiles");
+    tiles.scroll(function() {
+        var top = tiles.scrollTop();
+        if (top <= 0) {
+            topBarFixed();
+        } else {
+            topBarHover();
+        }
+    });
+
+}

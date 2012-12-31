@@ -1,26 +1,22 @@
-/** Hey cool **/
+/** positions **/
 
 body {
     width: 100%;
-    margin-top: 100px;
 }
 
-.animation-layer {
+
+header {
     position: fixed;
-    z-index: 999;
     width: 100%;
-    bottom: 0;
     top: 0;
-    left: 0;
-    right: 0;
-    pointer-events:none; /* This is super important - it makes sure the clicks don't get intercepted by the animation layer*/
+    height: 75px; /* headerheight */
+    z-index: 1;
 }
 
 .content {
     position: relative;
     margin-left: 120px;
     margin-right: 50px;
-    background-color: #111;
 }
 
 .tiles {
@@ -35,8 +31,10 @@ body {
     overflow: scroll;
     -webkit-overflow-scrolling: touch;
     height: 100%;
-    background-color: #991;
     text-align: center;
+}
+.tiles-wrapper {
+    margin-top: 100px; /* headerheight */
 }
 
 .large {
@@ -44,14 +42,12 @@ body {
     left: 0;
     top: 0;
     width: 100%;
-    background-color: #191;
 }
 
 .sidebar {
     position: fixed;
     padding-left: 20px;
     width: 80px;
-    background-color: #199;
 }
 
 .sidebar-element {
@@ -59,25 +55,12 @@ body {
     width: 60px;
     height: 60px;
     margin-top: 10px;
-
-    background-color: #319;
-    line-height: 100px;
-    text-align: center;
-}
-
-.sidebar-selected {
-    background-color: #63A;
 }
 
 .tile-element {
     display: inline-block;
     width: 200px;
     height: 200px;
-    margin: 25px;
-    
-    background-color: #931;
-    line-height: 200px;
-    text-align: center;
 }
 
 .large-element {
@@ -85,11 +68,40 @@ body {
     width: 100%;
     height: 500px;
     border-bottom:5px solid #888;
+}
 
-    
-    background-color: #931;
-    line-height: 500px;
-    text-align: center;
+
+
+/* Text */
+body {
+    font-family: Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+}
+.thin {
+    font-weight: 300;
+}
+.lowercase {
+    text-transform: lowercase;
+}
+.h1, .h2 {
+    font-weight: 300;
+    color: #444;
+}
+.h1 {
+    font-size: 23px;
+}
+.h2 {
+    font-size: 18px;
+}
+.nocolor {
+    color: inherit;
+}
+a, a:visited, a:hover, a:link {
+    text-decoration: none;
+}
+a:hover {
+    text-decoration: underline;
 }
 
 
@@ -110,4 +122,90 @@ body {
     height: 0;
     clear: both;
     visibility: hidden;
+}
+.animation-layer {
+    position: fixed;
+    z-index: 999;
+    width: 100%;
+    bottom: 0;
+    top: 0;
+    left: 0;
+    right: 0;
+    pointer-events:none; /* This is super important - it makes sure the clicks don't get intercepted by the animation layer*/
+}
+.block {
+}
+
+
+/** Header **/
+.metroname, .links {
+    height: 100%;
+    line-height: 75px; /* headerheight */
+}
+.metroname {
+    float: left;
+    margin-left: 22px;
+    margin-right: 22px;
+}
+.links {
+    float: right;
+    margin-right: 30px;
+}
+.resume, .email, .homelink {
+    display: inline-block;
+    height: 100%;
+}
+.resume {
+    padding-right: 10px;
+}
+.email {
+    padding-left: 10px;
+}
+header {
+    border-bottom: 1px dotted rgba(0,0,0,0.16);
+}
+
+    
+
+/** Tiles */
+.tile-element {
+    margin: 0;
+    margin-bottom: 15px;
+    margin-right: 15px;
+    border-radius: 2px;
+    border: 15px solid #fff;
+    box-shadow: 0px 0px 1px 1px rgba(0,0,0,0.16);
+}
+
+
+
+/** debug colors **/
+body {
+    background-color: #f1f1f1;
+}
+header {  
+    background-color: rgba(255,255,255,0); 
+    box-shadow: 0px 0px 0px 0px  rgba(0,0,0,0.16);
+}
+.content {
+}
+.tiles {
+}
+
+.large {
+}
+
+.sidebar {
+}
+
+.sidebar-element {
+    background-color: #319;
+}
+
+.sidebar-selected {
+    background-color: #63A;
+}
+
+.tile-element {
+    background-color: #008888;
 }
