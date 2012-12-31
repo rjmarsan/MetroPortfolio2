@@ -10,25 +10,40 @@
 
 (function($) {
     var params = {};
+    var data = {};
 
+    $.fn.fancynav = function( options ) {
+        params = $.extend( {
+            'tilesQuery'     : '.tiles',
+            'sidebarQuery'   : '.sidebar',
+            'largeQuery'     : '.large',
+            'anchorName'     : 'data-anchor',
+            'doAnimation'    : true,
+            'homeCallback'   : function() {},
+            'detailsCallback': function() {},
+
+        }, options);
+
+        setup();
+        return this;
+    };
     $(function() {
         setup();
     });
 
     var setup = function() {
         /* Some script-wide parameters */
-        params.tiles = $(".tiles");
-        params.sidebar = $(".sidebar");
-        params.large = $(".large");
-        params.anchorName = "data-anchor";
-        params.autoScrollFlag = false; //hack - flag to prevent the URL from getting updated when it shouldn't.
+        data.autoScrollFlag = false; //hack - flag to prevent the URL from getting updated when it shouldn't.
+        data.tiles = $(params.tilesQuery);
+        data.sidebar = $(params.sidebarQuery);
+        data.large = $(params.largeQuery);
 
         /* making a database for all of the elements */
-        params.pairs = getPairs($(".sidebar-element"), $(".tile-element"), $(".large-element"));
+        data.pairs = getPairs($(".sidebar-element"), $(".tile-element"), $(".large-element"));
 
         /* Setting up all of the interactions */
-        setupTiles(params.pairs, $(".animation-layer"));
-        setupScrolling(params.pairs, "sidebar-selected");
+        setupTiles(data.pairs, $(".animation-layer"));
+        setupScrolling(data.pairs, "sidebar-selected");
         setupHome($(".sidebar-home"));
         /* event listener for when the back button is pressed */
         window.addEventListener("popstate", pageChange, false);
@@ -64,33 +79,35 @@
     var setupTiles = function(pairs, animationlayer) {
         $.each(pairs,function(index,pair) {
             pair.tile.click(function() {
-                //this is the transition animation
-                var windowtop = $(window).scrollTop();
-                var windowleft = $(window).scrollLeft();
-                var tile = pair.tile;
-                var side = pair.sidebar;
-                var tilex = tile.offset().left - tile.margin().left - tile.padding().left - windowleft;
-                var tiley = tile.offset().top - tile.margin().top - tile.padding().top - windowtop;
-                var sidex = side.offset().left - side.margin().left - side.padding().left - windowleft;
-                var sidey = side.offset().top - side.margin().top - side.padding().top - windowtop;
-                //console.log("tile: ("+tilex+","+tiley+") Sidebar: ("+sidex+","+sidey+")");
-                var clone = pair.tile.clone();
-                //console.log(clone[0].classList);
-                clone.css("position", "absolute");
-                clone.css("top", tiley+"px");
-                clone.css("left", tilex+"px");
-                animationlayer.append(clone);
-                clone.animate({ 
-                    "top":sidey, 
-                    "left":sidex,
-                    "width":side.width(),
-                    "height":side.height(),
-                    "padding":side.css("padding"),
-                    "margin":side.css("margin")
-                }, 500, function() {
-                }).fadeOut(500, function() {
-                    clone.remove();
-                });
+                if (params.doAnimation) {
+                    //this is the transition animation
+                    var windowtop = $(window).scrollTop();
+                    var windowleft = $(window).scrollLeft();
+                    var tile = pair.tile;
+                    var side = pair.sidebar;
+                    var tilex = tile.offset().left - tile.margin().left - tile.padding().left - windowleft;
+                    var tiley = tile.offset().top - tile.margin().top - tile.padding().top - windowtop;
+                    var sidex = side.offset().left - side.margin().left - side.padding().left - windowleft;
+                    var sidey = side.offset().top - side.margin().top - side.padding().top - windowtop;
+                    //console.log("tile: ("+tilex+","+tiley+") Sidebar: ("+sidex+","+sidey+")");
+                    var clone = pair.tile.clone();
+                    //console.log(clone[0].classList);
+                    clone.css("position", "absolute");
+                    clone.css("top", tiley+"px");
+                    clone.css("left", tilex+"px");
+                    animationlayer.append(clone);
+                    clone.animate({ 
+                        "top":sidey, 
+                        "left":sidex,
+                        "width":side.width(),
+                        "height":side.height(),
+                        "padding":side.css("padding"),
+                        "margin":side.css("margin")
+                    }, 500, function() {
+                    }).fadeOut(500, function() {
+                        clone.remove();
+                    });
+                }
                 actionGoTo(pair, 300, true);
             });
         });
@@ -100,9 +117,9 @@
     * The fancy animation/transition from the 'home' view to the 'large' view
     */
     var bringInSidebarAndLarge = function(time) {
-        params.tiles.fadeOut(time);
-        params.sidebar.dequeue().fadeTo(time, 1);
-        params.large.fadeIn(time);
+        data.tiles.fadeOut(time);
+        data.sidebar.dequeue().fadeTo(time, 1);
+        data.large.fadeIn(time);
     };
 
     /*
@@ -110,10 +127,10 @@
     * the inverse of above
     */
     var goHome = function() {
-        params.tiles.fadeIn(1000);
-        params.sidebar.dequeue().fadeTo(1000, 0);
+        data.tiles.fadeIn(1000);
+        data.sidebar.dequeue().fadeTo(1000, 0);
         preventScrollWatchingFor(2000);
-        params.large.fadeOut(1000);
+        data.large.fadeOut(1000);
     };
 
 
@@ -156,7 +173,7 @@
         //console.log("New hash: "+url);
         var hasgonesomewhere = false;
         if (url) {
-            $.each(params.pairs,function(index,pair) {
+            $.each(data.pairs,function(index,pair) {
                 if (pair.large.attr(params.anchorName) == url) {
                     actionGoTo(pair, 300, false);
                     hasgonesomewhere = true;
@@ -218,7 +235,7 @@
                     pair.sidebar.addClass(selectedClass);
                     selected = true; //don't select any more than one
                     //window.location.hash = pair.large.attr("data-anchor");
-                    //if (!params.autoScrollFlag) updatePage(pair);
+                    //if (!data.autoScrollFlag) updatePage(pair);
                 } else {
                     pair.sidebar.removeClass(selectedClass);
                 }
@@ -249,8 +266,8 @@
     * Hack.
     */
     var preventScrollWatchingFor = function(millis) {
-        params.autoScrollFlag = true;
-        setTimeout(function() { params.autoScrollFlag = false; }, millis);
+        data.autoScrollFlag = true;
+        setTimeout(function() { data.autoScrollFlag = false; }, millis);
     };
 
 
@@ -259,3 +276,13 @@
 })(jQuery);
 
 
+
+
+/**
+* So this is when we actually use it
+**/
+$(function() {
+    $().fancynav({
+
+    });
+});
