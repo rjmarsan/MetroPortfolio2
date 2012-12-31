@@ -9,6 +9,7 @@
 */
 
 (function($) {
+    var params = {};
 
     $(function() {
         setup();
@@ -16,18 +17,18 @@
 
     var setup = function() {
         /* Some script-wide parameters */
-        tiles = $(".tiles");
-        sidebar = $(".sidebar");
-        large = $(".large");
-        anchorName = "data-anchor";
-        autoScrollFlag = false; //hack - flag to prevent the URL from getting updated when it shouldn't.
+        params.tiles = $(".tiles");
+        params.sidebar = $(".sidebar");
+        params.large = $(".large");
+        params.anchorName = "data-anchor";
+        params.autoScrollFlag = false; //hack - flag to prevent the URL from getting updated when it shouldn't.
 
         /* making a database for all of the elements */
-        pairs = getPairs($(".sidebar-element"), $(".tile-element"), $(".large-element"));
+        params.pairs = getPairs($(".sidebar-element"), $(".tile-element"), $(".large-element"));
 
         /* Setting up all of the interactions */
-        setupTiles(pairs, $(".animation-layer"));
-        setupScrolling(pairs, "sidebar-selected");
+        setupTiles(params.pairs, $(".animation-layer"));
+        setupScrolling(params.pairs, "sidebar-selected");
         setupHome($(".sidebar-home"));
         /* event listener for when the back button is pressed */
         window.addEventListener("popstate", pageChange, false);
@@ -99,9 +100,9 @@
     * The fancy animation/transition from the 'home' view to the 'large' view
     */
     var bringInSidebarAndLarge = function(time) {
-        tiles.fadeOut(time);
-        sidebar.dequeue().fadeTo(time, 1);
-        large.fadeIn(time);
+        params.tiles.fadeOut(time);
+        params.sidebar.dequeue().fadeTo(time, 1);
+        params.large.fadeIn(time);
     };
 
     /*
@@ -109,10 +110,10 @@
     * the inverse of above
     */
     var goHome = function() {
-        tiles.fadeIn(1000);
-        sidebar.dequeue().fadeTo(1000, 0);
+        params.tiles.fadeIn(1000);
+        params.sidebar.dequeue().fadeTo(1000, 0);
         preventScrollWatchingFor(2000);
-        large.fadeOut(1000);
+        params.large.fadeOut(1000);
     };
 
 
@@ -155,8 +156,8 @@
         //console.log("New hash: "+url);
         var hasgonesomewhere = false;
         if (url) {
-            $.each(pairs,function(index,pair) {
-                if (pair.large.attr(anchorName) == url) {
+            $.each(params.pairs,function(index,pair) {
+                if (pair.large.attr(params.anchorName) == url) {
                     actionGoTo(pair, 300, false);
                     hasgonesomewhere = true;
                 }
@@ -184,7 +185,7 @@
     */
     function updatePage(pair, forceback) {
         var loc = window.location;
-        var newhash = pair.large.attr(anchorName);
+        var newhash = pair.large.attr(params.anchorName);
         var curhash = loc.pathname.replace("/","");
         //console.log("Updating hash - current: "+curhash+ " new: "+newhash);
         if (newhash == curhash) {
@@ -217,7 +218,7 @@
                     pair.sidebar.addClass(selectedClass);
                     selected = true; //don't select any more than one
                     //window.location.hash = pair.large.attr("data-anchor");
-                    //if (!autoScrollFlag) updatePage(pair);
+                    //if (!params.autoScrollFlag) updatePage(pair);
                 } else {
                     pair.sidebar.removeClass(selectedClass);
                 }
@@ -248,8 +249,8 @@
     * Hack.
     */
     var preventScrollWatchingFor = function(millis) {
-        autoScrollFlag = true;
-        setTimeout(function() { autoScrollFlag = false; }, millis);
+        params.autoScrollFlag = true;
+        setTimeout(function() { params.autoScrollFlag = false; }, millis);
     };
 
 
