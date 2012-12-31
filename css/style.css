@@ -10,13 +10,11 @@ header {
     width: 100%;
     top: 0;
     height: 75px; /* headerheight */
-    z-index: 1;
+    z-index: 5;
 }
 
 .content {
     position: relative;
-    margin-left: 120px;
-    margin-right: 50px;
 }
 
 .tiles {
@@ -43,13 +41,17 @@ header {
     position: absolute;
     left: 0;
     top: 0;
+    margin-top: 75px; /* headerheight */
     width: 100%;
 }
 
 .sidebar {
     position: fixed;
+    right: 0px;
+    top: 75px; /* headerheight */
     padding-left: 20px;
     width: 80px;
+    z-index: 1;
 }
 
 .sidebar-element {
@@ -172,7 +174,7 @@ header {
 
     
 
-/** Tiles */
+/** Tiles **/
 .tile-element {
     margin: 0;
     margin-bottom: 15px;
@@ -180,6 +182,11 @@ header {
     border-radius: 2px;
     border: 15px solid #fff;
     box-shadow: 0px 0px 1px 1px rgba(0,0,0,0.16);
+}
+
+/** Content **/
+.large-wrapper {
+    margin: 0 auto;
 }
 
 
@@ -205,7 +212,7 @@ header {
     .tiles-wrapper {
         width: 1245px;
     }
-    .header-wrapper {
+    .header-wrapper, .large-wrapper {
         width: 1270px;
     }
 }
@@ -214,7 +221,7 @@ header {
     .tiles-wrapper {
         width: 995px;
     }
-    .header-wrapper {
+    .header-wrapper, .large-wrapper {
         width: 1025px;
     }
 }
@@ -223,7 +230,7 @@ header {
     .tiles-wrapper {
         width: 745px;
     }
-    .header-wrapper {
+    .header-wrapper, .large-wrapper {
         width: 780px;
     }
 }
@@ -232,7 +239,7 @@ header {
     .tiles-wrapper {
         width: 495px;
     }
-    .header-wrapper {
+    .header-wrapper, .large-wrapper {
         width: 535px;
     }
 }
@@ -241,7 +248,7 @@ header {
     .tiles-wrapper {
         width: 245px;
     }
-    .header-wrapper {
+    .header-wrapper, .large-wrapper {
         width: 100%;
     }
 }
@@ -261,7 +268,8 @@ header {
 .tiles {
 }
 
-.large {
+.large-wrapper {
+    background-color: #917
 }
 
 .sidebar {

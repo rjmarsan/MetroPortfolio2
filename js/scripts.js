@@ -180,7 +180,7 @@
     var actionGoTo = function(pair, time, fromuser) {
         bringInSidebarAndLarge(time*2);
         preventScrollWatchingFor(time*4);
-        $.scrollTo(pair.large, time);
+        $.scrollTo(pair.large.offset().top-75, time);
         updatePage(pair, fromuser);
         state.currentPair = pair;
         params.detailsCallback(pair);
