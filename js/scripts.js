@@ -39,6 +39,7 @@ currentColumns = 0;
                 'anchorName'     : 'data-anchor',
                 'animationLayer' : '.animation-layer',
                 'sidebarSelected': 'sidebar-selected',
+                'largeSelected'  : 'large-selected',
                 'sidebarHome'    : '.homelink',
                 'anchorScroll'   : false,         //update page while scrolling
                 'doAnimation'    : false,
@@ -65,7 +66,7 @@ currentColumns = 0;
 
         /* Setting up all of the interactions */
         setupTiles(data.pairs, $(params.animationLayer));
-        setupScrolling(data.pairs, params.sidebarSelected);
+        setupScrolling(data.pairs, params.sidebarSelected, params.largeSelected);
         setupHome($(params.sidebarHome));
         /* event listener for when the back button is pressed */
         window.addEventListener("popstate", pageChange, false);
@@ -194,6 +195,7 @@ currentColumns = 0;
         updatePage(pair, fromuser);
         state.currentPair = pair;
         params.detailsCallback(pair);
+        onScroll();
     };
 
     /** Page Events **/
@@ -260,28 +262,38 @@ currentColumns = 0;
     * Handles what happens for every scroll event
     * This is a tricky bit of code.
     */
-    var setupScrolling = function(pairs, selectedClass) {
-        $(window).scroll(function() {
-            var selected = false;
-            $.each(pairs,function(index,pair) {
-                if (selected == false && inRange(pair.large)) {
-                    selectPair(pair, selectedClass);
-                    selected = true; //don't select any more than one
-                    //window.location.hash = pair.large.attr("data-anchor");
-                    if (params.anchorScroll && !data.autoScrollFlag) updatePage(pair);
-                } else {
-                    pair.sidebar.removeClass(selectedClass);
-                }
-            });
-        });
+    var setupScrolling = function() {
+        $(window).scroll(onScroll);
+        var pairs = data.pairs;
         $.each(pairs,function(index,pair) {
             pair.sidebar.click(function() {
                 actionGoTo(pair, 300, true);
             });
         });
     };
-    var selectPair = function(pair, selectedClass) {
+    var onScroll = function() {
+        var pairs = data.pairs;
+        var selectedClass = params.sidebarSelected;
+        var selectedLargeClass = params.largeSelected;
+        var selected = false;
+        $.each(pairs,function(index,pair) {
+            if (selected == false && inRange(pair.large)) {
+                selectPair(pair, selectedClass, selectedLargeClass);
+                selected = true; //don't select any more than one
+                //window.location.hash = pair.large.attr("data-anchor");
+                if (params.anchorScroll && !data.autoScrollFlag) updatePage(pair);
+            } else {
+                unselectPair(pair, selectedClass, selectedLargeClass);
+            }
+        });
+    };
+    var unselectPair = function(pair, selectedClass, selectedLargeClass) {
+        pair.sidebar.removeClass(selectedClass);
+        pair.large.removeClass(selectedLargeClass);
+    };
+    var selectPair = function(pair, selectedClass, selectedLargeClass) {
         pair.sidebar.addClass(selectedClass);
+        pair.large.addClass(selectedLargeClass);
 
         if (pair != state.highlighted) {
             console.log(pair.sidebar.html());
@@ -315,7 +327,7 @@ currentColumns = 0;
     var inRange = function(elem) {
         var docViewTop = $(window).scrollTop();
         var docViewBottom = docViewTop + $(window).height();
-        var docLine = (docViewTop*3+docViewBottom)/4;
+        var docLine = (docViewTop*1+docViewBottom)/2;
 
         var elemTop = elem.offset().top;
         var elemBottom = elemTop + elem.height();

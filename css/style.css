@@ -191,6 +191,12 @@ header {
     margin-left: 30px;
     margin-right: 30px;
 }
+.large-element {
+    background-color: #f1f1f1;
+}
+.large-selected {
+    background-color: #fff;
+}
 
 
 /** sidebar **/
