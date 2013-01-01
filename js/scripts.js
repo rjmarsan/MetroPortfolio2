@@ -1,4 +1,5 @@
 headerHeight = 75;
+currentColumns = 0;
 
 /*
  We wrap all of this in '(function($) {' so that it's all encapsulated.
@@ -343,6 +344,7 @@ headerHeight = 75;
 **/
 $(function() {
     var recheckTopbar = setupTopBar();
+    watchColumns(function() { recheckTopbar(true) });
     var wentHome = function() { 
         recheckTopbar();
     };
@@ -355,6 +357,31 @@ $(function() {
     });
 });
 
+
+var watchColumns = function(columnsCallback) {
+    var cols = [Infinity, 1595, 1345, 1095, 855, 594];
+
+    var watcher = function() {
+        var width = $(window).width();
+        var smallestcol = cols.length + 1;
+        $.each(cols, function(index, elem) {
+            if (width < elem) {
+                smallestcol = index;
+            }
+        });
+        var newColumns = cols.length - smallestcol;
+        if (newColumns != currentColumns) {
+            currentColumns = newColumns;
+            columnsCallback();
+        }
+        currentColumns = newColumns;
+    }
+
+    $(window).resize(watcher);
+
+    watcher();
+
+}
 
 var setupTopBar = function() {
     var tiles = $(".tiles");
@@ -381,7 +408,7 @@ var setupTopBar = function() {
     };
 
     var topBarPeek = function(top, actuallymove) {
-        console.log("Top: "+top);
+        //console.log("Top: "+top);
         if (actuallymove == false || (lasttop < top && lastdown == false) ) {
             firsttop = top;
             lastdown = true;
@@ -402,7 +429,7 @@ var setupTopBar = function() {
 
     var checkScrollTiles = function() {
         if ($().fancynav("state").home == false) return;
-        console.log("Tiles scroll");
+        //console.log("Tiles scroll");
         var top = tiles.scrollTop();
         if (top <= 0) {
             topBarFixed(top);
@@ -411,27 +438,33 @@ var setupTopBar = function() {
         }
         topBarNotPeak();
     };
-    var checkScrollWindow = function() {
+    var checkScrollWindow = function(butdontmove) {
         if ($().fancynav("state").home == true) return;
-        console.log("Window scroll");
+        //console.log("Window scroll");
         var top = $(window).scrollTop();
         if (top <= 0) {
             topBarFixed(top);
         } else {
             topBarHover(top);
-            if ($().fancynav("state").intransition == false)
-                topBarPeek(top, true);
-            else
-                topBarPeek(top, false);
+            if (currentColumns <= 2) {
+                if (!butdontmove && $().fancynav("state").intransition == false)
+                    topBarPeek(top, true);
+                else
+                    topBarPeek(top, false);
+            } else {
+                topBarNotPeak();
+            }
         }
     };
 
     tiles.scroll(checkScrollTiles);
-    $(window).scroll(checkScrollWindow);
-
-    var recheck = function() {
-        checkScrollTiles();
+    $(window).scroll(function() {
         checkScrollWindow();
+    });
+
+    var recheck = function(dontmove) {
+        checkScrollTiles();
+        checkScrollWindow(dontmove);
     }
 
     return recheck;
