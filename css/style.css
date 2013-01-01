@@ -211,11 +211,8 @@ header {
 .large-selected {
     background-color: #fff;
 }
-.large-element-inner {
-    border-top: 1px solid #afafaf;
-}
-.large-padding:first-child .large-element:first-child .large-element-inner {
-    border-top: 0px solid #afafaf;
+.large-element{
+    border-bottom: 1px solid #afafaf;
 }
 .shadowbefore, .shadowafter {
     display:block;
@@ -242,7 +239,10 @@ header {
     width: 100%;
 }
 .large-element-inner {
-    height: 600px;
+    min-height: 600px;
+}
+.large-display {
+    width: 100%;
 }
 
 
@@ -302,8 +302,9 @@ header {
     }
     .sidebar {
     }
-    .large-element-padding {
-        padding-right: 60px;
+    .large-element-inner {
+        margin-right: 90px;
+        margin-left: 90px;
     }
 }
 /* 5 columns */
@@ -338,9 +339,11 @@ header {
     }
     .sidebar {
         width: 0px;
+        padding: 0px;
     }
-    .large-padding {
+    .large-element-inner {
         margin-right: 0px;
+        margin-left: 0px;
     }
 }
 
@@ -351,9 +354,6 @@ header {
     }
     .large-wrapper {
         width: 100%;
-    }
-    .sidebar {
-        width: 0px;
     }
     .large-padding {
         margin-right: 0px;
