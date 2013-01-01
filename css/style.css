@@ -55,13 +55,6 @@ header {
 }
 
 
-.tile-element {
-    display: inline-block;
-    width: 200px;
-    height: 200px;
-}
-
-
 
 
 /* Text */
@@ -163,7 +156,13 @@ header {
     
 
 /** Tiles **/
+.tiles-padding {
+    padding-right: 15px;
+    margin-left: 15px;
+    margin-right: 15px;
+}
 .tile-element {
+    position: relative;
     margin: 0;
     margin-bottom: 15px;
     margin-left: 15px;
@@ -171,11 +170,30 @@ header {
     border: 15px solid #fff;
     box-shadow: 0px 0px 1px 1px rgba(0,0,0,0.16);
 }
-.tiles-padding {
-    padding-right: 15px;
-    margin-left: 15px;
-    margin-right: 15px;
+.tile-element {
+    display: inline-block;
+    width: 200px;
+    height: 200px;
 }
+.tile-2x1 {
+    width: 449px;
+    height: 200px;
+}
+.image-1x1, .image-2x1 {
+    display: block;
+    position: absolute;
+    left: 0px;
+    top: 0px;
+}
+.image-1x1 {
+    width: 200px;
+    height: 200px;
+}
+.image-2x1 {
+    width: 449px;
+    height: 200px;
+}
+
 
 /** Content **/
 .large-wrapper {
@@ -320,6 +338,12 @@ header {
     }
     .large-padding {
         margin-right: 0px;
+    }
+    .tile-2x1 {
+        width: 200px;
+    }
+    .image-2x1 {
+        display: none;
     }
 }
 /* 1 column - not including margins */
