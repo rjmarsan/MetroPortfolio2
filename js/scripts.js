@@ -388,7 +388,7 @@ var setupTopBar = function() {
         } else if (lasttop > top && lastdown == true) {
             lastdown = false;
             var newtop = top - topbar.height();
-            firstop = Math.max(newtop, firsttop);
+            firsttop = Math.max(newtop, firsttop);
             firsttop = Math.max(0, firsttop);
         }
         lasttop = top;
