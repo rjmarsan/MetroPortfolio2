@@ -472,9 +472,9 @@ var setupTopBar = function() {
         if ($().fancynav("state").home == true) return;
         console.log("Window scroll");
         var top = $(window).scrollTop();
-        if (top <= 0) {
-            topBarFixed(top);
-        } else {
+        //if (top <= 0) {
+        //    topBarFixed(top);
+        //} else {
             topBarHover(top);
             if (currentColumns <= 2) {
                 if (!butdontmove && $().fancynav("state").intransition == false)
@@ -484,7 +484,7 @@ var setupTopBar = function() {
             } else {
                 topBarNotPeak();
             }
-        }
+        //}
     };
 
     tiles.scroll(checkScrollTiles);
