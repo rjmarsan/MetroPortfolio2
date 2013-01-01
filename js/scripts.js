@@ -145,10 +145,10 @@ currentColumns = 0;
     var bringInSidebarAndLarge = function(time) {
         data.tiles.fadeOut(time);
         data.sidebar.stop(true, false).fadeTo(time, 0.99);
+        state.intransition = true;
         data.large.fadeIn(time, function() {
             state.intransition = false;
         });
-        state.intransition = true;
         state.home = false;
     };
 
@@ -160,10 +160,10 @@ currentColumns = 0;
         data.tiles.fadeIn(1000);
         data.sidebar.stop(true, false).fadeTo(1000, 0.00);
         preventScrollWatchingFor(2000);
+        state.intransition = true;
         data.large.fadeOut(1000, function() {
             state.intransition = false;
         });
-        state.intransition = true;
         state.home = true;
     };
 
@@ -194,7 +194,11 @@ currentColumns = 0;
     var actionGoTo = function(pair, time, fromuser) {
         bringInSidebarAndLarge(time*2);
         preventScrollWatchingFor(time*4);
-        $.scrollTo(pair.large.offset().top-75, time);
+        state.intransition = true;
+        $.scrollTo(pair.large.offset().top-75, time, {onAfter:function() {
+            state.intransition = false;
+            //console.log("onAfter");
+        }});
         updatePage(pair, fromuser);
         state.currentPair = pair;
         params.detailsCallback(pair);
@@ -432,11 +436,13 @@ var setupTopBar = function() {
     };
 
     var topBarPeek = function(top, actuallymove) {
-        //console.log("Top: "+top);
+        console.log("Top: "+top);
         if (actuallymove == false || (lasttop < top && lastdown == false) ) {
+            console.log("Setting the top when we scroll down");
             firsttop = top;
             lastdown = true;
         } else if (lasttop > top && lastdown == true) {
+            console.log("Setting the new top when we scroll up");
             lastdown = false;
             var newtop = top - topbar.height();
             firsttop = Math.max(newtop, firsttop);
@@ -453,7 +459,7 @@ var setupTopBar = function() {
 
     var checkScrollTiles = function() {
         if ($().fancynav("state").home == false) return;
-        //console.log("Tiles scroll");
+        console.log("Tiles scroll");
         var top = tiles.scrollTop();
         if (top <= 0) {
             topBarFixed(top);
@@ -464,7 +470,7 @@ var setupTopBar = function() {
     };
     var checkScrollWindow = function(butdontmove) {
         if ($().fancynav("state").home == true) return;
-        //console.log("Window scroll");
+        console.log("Window scroll");
         var top = $(window).scrollTop();
         if (top <= 0) {
             topBarFixed(top);
