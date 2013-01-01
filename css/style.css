@@ -214,7 +214,7 @@ header {
 .large-element-inner {
     border-top: 1px solid #afafaf;
 }
-.large-wrapper:first-child .large-element-inner {
+.large-padding:first-child .large-element:first-child .large-element-inner {
     border-top: 0px solid #afafaf;
 }
 .shadowbefore, .shadowafter {
@@ -254,16 +254,33 @@ header {
     height: 100%;
  }
  .sidebar {
-    margin-top: 75px; /* headerheight */
+    margin-top: 90px; /* headerheight + 15 padding */
     margin-bottom: 75px; /* headerheight */
     overflow: hidden;
     right: 0;
+    padding-right: 15px;
  }
 .sidebar-element {
     float: left;
+    position: relative;
     width: 60px;
     height: 60px;
-    margin-bottom: 10px;
+    margin-bottom: 5px;
+    background: #fff;
+}
+.sidebar-image {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+}
+.sidebar-element .sidebar-image {
+    opacity: 0.7;
+}
+.sidebar-selected .sidebar-image {
+    opacity: 1.0;
+}
+.sidebar-element:hover .sidebar-image {
+    opacity: 0.9;
 }
 
 
@@ -285,8 +302,8 @@ header {
     }
     .sidebar {
     }
-    .large-padding {
-        margin-right: 60px;
+    .large-element-padding {
+        padding-right: 60px;
     }
 }
 /* 5 columns */
@@ -297,6 +314,7 @@ header {
     .sidebar {
     }
 }
+
 /* 4 columns */
 @media (max-width: 1345px) {
     .tiles-wrapper, .header-wrapper {
@@ -373,13 +391,6 @@ header {
 .sidebar {
 }
 
-.sidebar-element {
-    background-color: #319;
-}
-
-.sidebar-selected {
-    background-color: #63A;
-}
 
 .tile-element {
     background-color: #008888;
