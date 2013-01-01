@@ -61,12 +61,6 @@ header {
     height: 200px;
 }
 
-.large-element {
-    float: left;
-    width: 100%;
-    height: 500px;
-    border-bottom:5px solid #888;
-}
 
 
 
@@ -196,6 +190,25 @@ header {
 }
 .large-selected {
     background-color: #fff;
+}
+.large-selected:before, .large-selected:after {
+    display:block;
+    height: 10px;
+    width: 100%;
+    content: "";
+    background-color: #f19;
+}
+.large-selected:before {
+    margin-top: -10px;
+}
+.large-selected:before {
+    margin-bottom: -10px;
+}
+.large-element {
+    width: 100%;
+}
+.large-element-inner {
+    height: 600px;
 }
 
 

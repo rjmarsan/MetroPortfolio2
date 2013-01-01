@@ -133,6 +133,9 @@ currentColumns = 0;
                 }
                 actionGoTo(pair, 300, true);
             });
+            pair.large.click(function() {
+                actionGoTo(pair, 300, true);
+            });
         });
     };
 
@@ -296,6 +299,7 @@ currentColumns = 0;
         pair.large.addClass(selectedLargeClass);
 
         if (pair != state.highlighted) {
+            /* sidebar stuff */
             console.log(pair.sidebar.html());
             var itemtop = pair.sidebar.position().top;
             var itemheight = pair.sidebar.height();
@@ -310,12 +314,14 @@ currentColumns = 0;
                 offset = totalheight-containerheight;
             }
             offset = Math.max(0, offset);
-
-
-
             //offset = Math.max(lastitemtop+lastheight, offset);
             console.log("Offset: "+offset);
             data.sidebar.children(".sidebar-inner").stop(true).animate({"margin-top":-offset},300);
+
+
+            /* shadows stuff */
+
+
             state.highlighted = pair;
         }
 
