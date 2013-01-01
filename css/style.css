@@ -187,22 +187,34 @@ header {
 }
 .large-element {
     background-color: #f1f1f1;
+    position: relative;
 }
 .large-selected {
     background-color: #fff;
 }
-.large-selected:before, .large-selected:after {
+.large-element-inner {
+    border-top: 1px solid #afafaf;
+}
+.shadowbefore, .shadowafter {
     display:block;
     height: 10px;
     width: 100%;
     content: "";
-    background-color: #f19;
+    opacity: 0;
+    position: absolute;
+    z-index: 1;
 }
-.large-selected:before {
+.shadowbefore {
+    top: 0px;
     margin-top: -10px;
+    background: url(../images/shadowtop.png) no-repeat center center ;
+    background-size: 100% 100%;
 }
-.large-selected:before {
+.shadowafter {
+    bottom: 0px;
     margin-bottom: -10px;
+    background: url(../images/shadowbottom.png) no-repeat center center ;
+    background-size: 100% 100%;
 }
 .large-element {
     width: 100%;

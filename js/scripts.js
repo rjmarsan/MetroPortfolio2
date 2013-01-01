@@ -144,7 +144,7 @@ currentColumns = 0;
     */
     var bringInSidebarAndLarge = function(time) {
         data.tiles.fadeOut(time);
-        data.sidebar.dequeue().fadeTo(time, 1);
+        data.sidebar.stop(true, false).fadeTo(time, 0.99);
         data.large.fadeIn(time, function() {
             state.intransition = false;
         });
@@ -158,7 +158,7 @@ currentColumns = 0;
     */
     var goHome = function() {
         data.tiles.fadeIn(1000);
-        data.sidebar.dequeue().fadeTo(1000, 0);
+        data.sidebar.stop(true, false).fadeTo(1000, 0.00);
         preventScrollWatchingFor(2000);
         data.large.fadeOut(1000, function() {
             state.intransition = false;
@@ -320,6 +320,12 @@ currentColumns = 0;
 
 
             /* shadows stuff */
+            pair.large.children(".shadowbefore, .shadowafter").stop(true,false).fadeTo(300, 0.99);
+            pair.large.animate({"background-color":"#fff"}, 300);
+            if (state.highlighted) {
+                state.highlighted.large.children(".shadowbefore, .shadowafter").stop(true,false).fadeTo(300, 0);
+                state.highlighted.large.animate({"background-color":"#f1f1f1"}, 300);
+            }
 
 
             state.highlighted = pair;
