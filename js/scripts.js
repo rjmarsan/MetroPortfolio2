@@ -197,7 +197,7 @@ currentColumns = 0;
         state.intransition = true;
         $.scrollTo(pair.large.offset().top-75, time, {onAfter:function() {
             state.intransition = false;
-            //console.log("onAfter");
+            console.log("onAfter");
         }});
         updatePage(pair, fromuser);
         state.currentPair = pair;
@@ -216,7 +216,7 @@ currentColumns = 0;
         var hasgonesomewhere = false;
         if (url) {
             $.each(data.pairs,function(index,pair) {
-                if (pair.large.attr(params.anchorName) == url) {
+                if (pair.large.attr(params.anchorName).toLowerCase() == url.toLowerCase()) {
                     actionGoTo(pair, 300, false);
                     hasgonesomewhere = true;
                 }
