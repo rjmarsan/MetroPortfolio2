@@ -61,7 +61,6 @@ header {
 body {
     font-family: Roboto, sans-serif;
     -webkit-font-smoothing: antialiased;
-    text-rendering: optimizeLegibility;
 }
 .thin {
     font-weight: 300;
@@ -136,14 +135,17 @@ a:hover {
     float: right;
     margin-right: 30px;
 }
-.resume, .email, .homelink {
+.homelink {
     display: inline-block;
     height: 100%;
 }
-.resume {
-    padding-right: 10px;
+.resume, .email, .slashslash {
+    height: 100%;
+    display: block;
+    float: left;
 }
-.email {
+.slashslash {
+    padding-right: 10px;
     padding-left: 10px;
 }
 header {
@@ -371,6 +373,19 @@ header {
         width: 100%;
     }
 }
+
+/* phone stuff for the header
+ * Also handled in javascript.
+ * this is just a backup
+ */
+@media (max-width: 400px) {
+    .metroname {
+    }
+    .links {
+        //white-space: nowrap;
+    }
+}
+
 
 
 

@@ -1,3 +1,11 @@
+DEBUG = false;
+function dlog(msg) {
+    if (DEBUG && 'console' in window) 
+        console.log(msg);
+}
+
+
+
 headerHeight = 75;
 currentColumns = 0;
 
@@ -112,9 +120,9 @@ currentColumns = 0;
                     var tiley = tile.offset().top - tile.margin().top - tile.padding().top - windowtop;
                     var sidex = side.offset().left - side.margin().left - side.padding().left - windowleft;
                     var sidey = side.offset().top - side.margin().top - side.padding().top - windowtop;
-                    //console.log("tile: ("+tilex+","+tiley+") Sidebar: ("+sidex+","+sidey+")");
+                    //dlog("tile: ("+tilex+","+tiley+") Sidebar: ("+sidex+","+sidey+")");
                     var clone = pair.tile.clone();
-                    //console.log(clone[0].classList);
+                    //dlog(clone[0].classList);
                     clone.css("position", "absolute");
                     clone.css("top", tiley+"px");
                     clone.css("left", tilex+"px");
@@ -196,8 +204,10 @@ currentColumns = 0;
         preventScrollWatchingFor(time*4);
         state.intransition = true;
         $.scrollTo(pair.large.offset().top-75, time, {onAfter:function() {
-            state.intransition = false;
-            console.log("onAfter");
+            setTimeout(function() {
+                state.intransition = false;
+                dlog("onAfter");
+            }, 200);
         }});
         updatePage(pair, fromuser);
         state.currentPair = pair;
@@ -212,7 +222,7 @@ currentColumns = 0;
     */
     var pageChange = function(e) {
         var url = window.location.pathname.replace("/","");
-        //console.log("New hash: "+url);
+        //dlog("New hash: "+url);
         var hasgonesomewhere = false;
         if (url) {
             $.each(data.pairs,function(index,pair) {
@@ -246,17 +256,17 @@ currentColumns = 0;
         var loc = window.location;
         var newhash = pair.large.attr(params.anchorName);
         var curhash = loc.pathname.replace("/","");
-        //console.log("Updating hash - current: "+curhash+ " new: "+newhash);
+        //dlog("Updating hash - current: "+curhash+ " new: "+newhash);
         if (newhash == curhash) {
-            //console.log("No need to update");
+            //dlog("No need to update");
             return;
         }
         if ("pushState" in history) {
             if (!curhash || forceback) {
-                //console.log("new location to "+newhash);
+                //dlog("new location to "+newhash);
                 history.pushState({state: 1}, document.title, newhash);
             } else {
-                //console.log("update location to "+newhash);
+                //dlog("update location to "+newhash);
                 history.replaceState({state: 1}, document.title, newhash);
             }
         }
@@ -304,7 +314,7 @@ currentColumns = 0;
 
         if (pair != state.highlighted) {
             /* sidebar stuff */
-            console.log(pair.sidebar.html());
+            dlog(pair.sidebar.html());
             var itemtop = pair.sidebar.position().top;
             var itemheight = pair.sidebar.height();
             var containerheight = data.sidebar.height()-headerHeight;
@@ -319,7 +329,7 @@ currentColumns = 0;
             }
             offset = Math.max(0, offset);
             //offset = Math.max(lastitemtop+lastheight, offset);
-            console.log("Offset: "+offset);
+            dlog("Offset: "+offset);
             data.sidebar.children(".sidebar-inner").stop(true).animate({"margin-top":-offset},300);
 
 
@@ -371,13 +381,16 @@ currentColumns = 0;
 * So this is when we actually use it
 **/
 $(function() {
+    fixHeader();
     var recheckTopbar = setupTopBar();
     watchColumns(function() { recheckTopbar(true) });
     var wentHome = function() { 
         recheckTopbar();
+        resizeHeader();
     };
     var wentDetails = function(pair) { 
         recheckTopbar();
+        resizeHeader();
     };
     $().fancynav({
         "homeCallback": wentHome,
@@ -436,13 +449,18 @@ var setupTopBar = function() {
     };
 
     var topBarPeek = function(top, actuallymove) {
-        console.log("Top: "+top);
+        dlog("Top: "+top);
+        top = Math.max(0, top);
         if (actuallymove == false || (lasttop < top && lastdown == false) ) {
-            console.log("Setting the top when we scroll down");
-            firsttop = top;
+            dlog("Setting the top when we scroll down");
+            if (actuallymove == true &&  firsttop < top && firsttop+topbar.height() > top) {
+                dlog("Dont move it right now");
+            } else {
+                firsttop = top;
+            }
             lastdown = true;
         } else if (lasttop > top && lastdown == true) {
-            console.log("Setting the new top when we scroll up");
+            dlog("Setting the new top when we scroll up");
             lastdown = false;
             var newtop = top - topbar.height();
             firsttop = Math.max(newtop, firsttop);
@@ -451,7 +469,8 @@ var setupTopBar = function() {
         lasttop = top;
         var topdist = lasttop - firsttop;
         topdist = Math.max(0, topdist);
-        if (actuallymove) topbar.css({"top":-topdist});
+        //if (actuallymove) 
+            topbar.css({"top":-topdist});
     };
     var topBarNotPeak = function() {
         topbar.css({"top":0});
@@ -459,7 +478,7 @@ var setupTopBar = function() {
 
     var checkScrollTiles = function() {
         if ($().fancynav("state").home == false) return;
-        console.log("Tiles scroll");
+        dlog("Tiles scroll");
         var top = tiles.scrollTop();
         if (top <= 0) {
             topBarFixed(top);
@@ -470,7 +489,7 @@ var setupTopBar = function() {
     };
     var checkScrollWindow = function(butdontmove) {
         if ($().fancynav("state").home == true) return;
-        console.log("Window scroll");
+        dlog("Window scroll");
         var top = $(window).scrollTop();
         //if (top <= 0) {
         //    topBarFixed(top);
@@ -499,3 +518,77 @@ var setupTopBar = function() {
 
     return recheck;
 }
+
+
+
+
+var fixHeader = function() {
+    var initialmaxwidth = 0;
+    var resize = function() {
+        var windowwidth = $(window).width();
+        var left = $(".metroname");
+        var right = $(".links");
+        var r1 = $(".resume");
+        var r2 = $(".slashslash");
+        var r3 = $(".email");
+        var theirsize = left.outerWidth(true)+right.outerWidth(true);
+        if (initialmaxwidth == 0) {
+            dlog("New initial max width: "+theirsize);
+            initialmaxwidth = theirsize;
+        }
+        dlog("Window width: "+windowwidth+ " computedwidth: "+theirsize);
+
+        var maxsizeleft = 23;
+        var maxsizeright = 18;
+        var maxlmarginleft = 30;
+        var maxlmarginright = 22;
+        var maxrmargin = 30;
+        var maxslashpaddingr = 10;
+        var maxslashpaddingl = 10;
+
+        var sizeleft = 23;
+        var sizeright = 18;
+        var lmarginleft = left.margin().left;
+        var lmarginright = left.margin().right;
+        var rmargin = right.margin().right;
+        var slashpaddingr = r2.padding().right;
+        var slashpaddingl = r2.padding().left;
+
+
+        sizeleft      = Math.min(maxsizeleft, windowwidth * (23/initialmaxwidth));
+        sizeright     = Math.min(maxsizeright, windowwidth * (18/initialmaxwidth));
+        left.css("font-size",sizeleft+"px");
+        right.css("font-size",sizeright+"px");
+        theirsize = left.outerWidth(true)+right.outerWidth(true); //get an updated size
+
+
+
+        var textsize = left.width() + r1.width() + r2.width() + r3.width() + lmarginright + 5; //a bit extra to account for rounding
+        dlog("Text takes up "+textsize);
+        var scaleby = (windowwidth - textsize) / (theirsize - textsize); //overflow pixels / pixels that we can change
+        dlog("Scale by: "+scaleby);
+
+
+        
+        lmarginleft   = Math.min(maxlmarginleft, lmarginleft * scaleby);
+        //lmarginright  = Math.min(maxlmarginright, lmarginright * scaleby);
+        rmargin       = Math.min(maxrmargin, rmargin * scaleby);
+        slashpaddingr = Math.min(maxslashpaddingr, slashpaddingr * scaleby);
+        slashpaddingl = Math.min(maxslashpaddingl, slashpaddingl * scaleby);
+        left.css("margin-left",lmarginleft);
+        left.css("margin-right",lmarginright);
+        right.css("margin-right",rmargin);
+        r2.css("padding-right",slashpaddingr);
+        r2.css("padding-left",slashpaddingl);
+        
+
+    };
+    var resizetwice = function() {
+        resize();
+        setTimeout(resize, 100);
+    }
+    $(window).resize(resizetwice);
+    resizetwice();
+    window.resizeHeader = resizetwice;
+    return resizetwice;
+};
