@@ -149,6 +149,7 @@ a:hover {
     padding-left: 10px;
 }
 header {
+    background-color: rgba(241,241,241,0.96);
     border-bottom: 1px dotted rgba(0,0,0,0.16);
 }
 .header-wrapper {
@@ -378,11 +379,24 @@ header {
  * Also handled in javascript.
  * this is just a backup
  */
-@media (max-width: 400px) {
+@media (max-width: 320px) {
     .metroname {
+        margin-left: 26px;
+        margin-right: 22px;
+        font-size: 20px;
     }
     .links {
-        //white-space: nowrap;
+        margin-right: 26px;
+    }
+    .slashslash {
+        padding-left: 7px;
+        padding-right: 7px;
+    }
+    .h1 {
+        font-size: 20px;
+    }
+    .h2 {
+        font-size:16px;
     }
 }
 

@@ -428,13 +428,13 @@ var setupTopBar = function() {
     var tiles = $(".tiles");
     var topbar = $("header");
     var attop = true;
-    var time = 600;
+    var time = 300;
     var firsttop = 0;
     var lasttop = 0;
     var lastdown = false;
     var topBarFixed = function(top) {
         if (attop == false) { 
-            topbar.stop(true).animate({"background-color": "rgba(255,255,255,0)", "boxShadowBlur": "0px"}, time);
+            topbar.stop(true).animate({"background-color": "rgba(241,241,241,0.96)", "boxShadowBlur": "0px"}, time);
             topbar.css("border-bottom-style", "dotted");
             topbar.css({"top":0});
             attop = true;
@@ -442,7 +442,7 @@ var setupTopBar = function() {
     };
     var topBarHover = function(top) {
         if (attop == true) {
-            topbar.stop(true).animate({"background-color": "rgba(250,250,250,0.96)", "boxShadowBlur":"15px"}, time);
+            topbar.stop(true).animate({"background-color": "rgba(250,250,250,0.96)", "boxShadowBlur":"15px"}, 10); //super quick
             topbar.css("border-bottom-style", "solid");
             attop = false;
         }
@@ -510,6 +510,10 @@ var setupTopBar = function() {
     $(window).scroll(function() {
         checkScrollWindow();
     });
+    document.addEventListener('touchmove', function(event) {
+        checkScrollWindow();
+    }, false);
+
 
     var recheck = function(dontmove) {
         checkScrollTiles();
@@ -523,7 +527,7 @@ var setupTopBar = function() {
 
 
 var fixHeader = function() {
-    var initialmaxwidth = 0;
+    var initialmaxwidth = 354;//0;
     var resize = function() {
         var windowwidth = $(window).width();
         var left = $(".metroname");
@@ -546,6 +550,8 @@ var fixHeader = function() {
         var maxslashpaddingr = 10;
         var maxslashpaddingl = 10;
 
+        var margins = maxlmarginleft + maxlmarginright + maxrmargin + maxslashpaddingr + maxslashpaddingl;
+
         var sizeleft = 23;
         var sizeright = 18;
         var lmarginleft = left.margin().left;
@@ -563,18 +569,18 @@ var fixHeader = function() {
 
 
 
-        var textsize = left.width() + r1.width() + r2.width() + r3.width() + lmarginright + 5; //a bit extra to account for rounding
+        var textsize = left.width() + r1.width() + r2.width() + r3.width() + lmarginright;//+ lmarginright + 5; //a bit extra to account for rounding
         dlog("Text takes up "+textsize);
-        var scaleby = (windowwidth - textsize) / (theirsize - textsize); //overflow pixels / pixels that we can change
+        var scaleby = (windowwidth - textsize) / ((textsize+margins) - textsize); //overflow pixels / pixels that we can change
         dlog("Scale by: "+scaleby);
 
 
         
-        lmarginleft   = Math.min(maxlmarginleft, lmarginleft * scaleby);
+        lmarginleft   = Math.floor(Math.min(maxlmarginleft, maxlmarginleft * scaleby));
         //lmarginright  = Math.min(maxlmarginright, lmarginright * scaleby);
-        rmargin       = Math.min(maxrmargin, rmargin * scaleby);
-        slashpaddingr = Math.min(maxslashpaddingr, slashpaddingr * scaleby);
-        slashpaddingl = Math.min(maxslashpaddingl, slashpaddingl * scaleby);
+        rmargin       = Math.floor(Math.min(maxrmargin, maxrmargin * scaleby));
+        slashpaddingr = Math.floor(Math.min(maxslashpaddingr, maxslashpaddingr * scaleby));
+        slashpaddingl = Math.floor(Math.min(maxslashpaddingl, maxslashpaddingl * scaleby));
         left.css("margin-left",lmarginleft);
         left.css("margin-right",lmarginright);
         right.css("margin-right",rmargin);
