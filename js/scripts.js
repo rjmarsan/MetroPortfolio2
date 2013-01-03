@@ -8,6 +8,10 @@ function dlog(msg) {
 
 headerHeight = 75;
 currentColumns = 0;
+var cols = [Infinity, 1345, 1095, 855, 595];
+var colSizes = [1270, 1025, 780, 535, 290];
+currentWidth = 0;
+currentDisplayWidth = 0;
 
 /*
  We wrap all of this in '(function($) {' so that it's all encapsulated.
@@ -384,23 +388,26 @@ $(function() {
     fixHeader();
     var recheckTopbar = setupTopBar();
     watchColumns(function() { recheckTopbar(true) });
+    var recheckFluidHeader = fluidHeader();
     var wentHome = function() { 
         recheckTopbar();
         resizeHeader();
+        recheckFluidHeader();
     };
     var wentDetails = function(pair) { 
         recheckTopbar();
         resizeHeader();
+        recheckFluidHeader();
     };
     $().fancynav({
         "homeCallback": wentHome,
         "detailsCallback": wentDetails,
     });
+    fluidImages();
 });
 
 
 var watchColumns = function(columnsCallback) {
-    var cols = [Infinity, 1595, 1345, 1095, 855, 594];
 
     var watcher = function() {
         var width = $(window).width();
@@ -411,11 +418,13 @@ var watchColumns = function(columnsCallback) {
             }
         });
         var newColumns = cols.length - smallestcol;
+        //dlog("New column: "+newColumns);
         if (newColumns != currentColumns) {
             currentColumns = newColumns;
             columnsCallback();
         }
         currentColumns = newColumns;
+        currentWidth = colSizes[smallestcol];
     }
 
     $(window).resize(watcher);
@@ -597,4 +606,82 @@ var fixHeader = function() {
     resizetwice();
     window.resizeHeader = resizetwice;
     return resizetwice;
+};
+
+
+
+var fluidHeader = function() {
+    var header = $(".header-wrapper");
+    var fluid = function() {
+        var width = $(window).width();
+
+        //super small. we should just ignore it.
+        if (currentColumns == 1) {
+            //if (header.css("width") != "100%") {
+            //    header.stop(true, false).animate({"width":width}, 300, function() {
+                    header.stop(true, false);
+                    header.css("width", "100%");
+            //    });
+            //}
+
+
+        } else if ($().fancynav("state").home) {
+            header.stop(true, false).animate({"width":currentWidth}, 300);
+            //dlog("Resizing to "+currentWidth);
+        } else {
+            header.stop(true, false).animate({"width":currentDisplayWidth}, 300);
+            dlog("Resizing to "+width);
+        }
+
+
+
+
+    };
+
+    var waitForDOM = function() {
+        setTimeout(fluid, 200);
+    };
+
+    $(window).resize(fluid);
+
+
+    waitForDOM();
+
+    return waitForDOM;
+
+};
+
+
+var isMobile = function() {
+    var width = $(window).width();
+    var height = $(window).height();
+    if (width <= 595 || (width <= 855 && height <= 700) ) return true;
+    return false;
+};
+
+
+var fluidImages = function() {
+    var header = $("header");
+    var sampleelem = $(".large-element-inner:first");
+    var setmaxheight = function() {
+        var height = $(window).height();
+        var padding = header.height() + 30;
+        var maxheight = height-padding;
+        var maxheight = Math.max(maxheight, 250);
+        var maxwidth = maxheight * 1.5;
+        maxwidth = Math.min(maxwidth, 1210);
+        if (isMobile()) {
+            $(".large-element-inner").css("max-width","100%");
+            currentDisplayWidth = $(window).width();
+        } else {
+            $(".large-element-inner").css("max-width",maxwidth+"px");
+            var samplesize = sampleelem.width();
+            if (samplesize <= 0) samplesize = maxwidth;
+            currentDisplayWidth = Math.min(samplesize+60,maxwidth+60);
+        }
+    };
+
+    $(window).resize(setmaxheight);
+    setmaxheight();
+
 };

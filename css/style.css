@@ -243,9 +243,16 @@ header {
 }
 .large-element-inner {
     min-height: 600px;
+    max-width: 1210px;
+    margin-left: auto;
+    margin-right: auto;
+}
+.large-display-wrapper {
+    width: 100%;
+    text-align: center;
 }
 .large-display {
-    width: 100%;
+    max-width: 100%;
 }
 
 
@@ -306,8 +313,8 @@ header {
     .sidebar {
     }
     .large-element-inner {
-        margin-right: 90px;
-        margin-left: 90px;
+        padding-right: 90px;
+        padding-left: 90px;
     }
 }
 /* 5 columns */
@@ -340,14 +347,20 @@ header {
     .tiles-wrapper, .header-wrapper {
         width: 535px;
     }
+}
+
+/* 2 columns, but where the height is at least as tall as the width */
+@media (max-width: 855px) and (max-height: 700px) {
+    /* Hide the side bar */
     .sidebar {
         width: 0px;
         padding: 0px;
     }
     .large-element-inner {
-        margin-right: 0px;
-        margin-left: 0px;
+        padding-right: 30px;
+        padding-left: 30px;
     }
+    /*******************/
 }
 
 /* 1 column */
@@ -367,6 +380,16 @@ header {
     .image-2x1 {
         display: none;
     }
+    /* Hide the side bar */
+    .sidebar {
+        width: 0px;
+        padding: 0px;
+    }
+    .large-element-inner {
+        padding-right: 30px;
+        padding-left: 30px;
+    }
+    /*******************/
 }
 /* 1 column - not including margins */
 @media (max-width: 535px) {
