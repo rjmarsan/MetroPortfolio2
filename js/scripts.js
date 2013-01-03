@@ -504,7 +504,7 @@ var setupTopBar = function() {
         //    topBarFixed(top);
         //} else {
             topBarHover(top);
-            if (currentColumns <= 2) {
+            if (isMobile()) {
                 if (!butdontmove && $().fancynav("state").intransition == false)
                     topBarPeek(top, true);
                 else
@@ -537,6 +537,8 @@ var setupTopBar = function() {
 
 var fixHeader = function() {
     var initialmaxwidth = 354;//0;
+    var lastcomputedtextsize = 0;
+    var lastcomputedcount = 0;
     var resize = function() {
         var windowwidth = $(window).width();
         var left = $(".metroname");
@@ -582,6 +584,15 @@ var fixHeader = function() {
         dlog("Text takes up "+textsize);
         var scaleby = (windowwidth - textsize) / ((textsize+margins) - textsize); //overflow pixels / pixels that we can change
         dlog("Scale by: "+scaleby);
+        if (textsize != lastcomputedtextsize) {
+            lastcomputedcount = 0;
+            lastcomputedtextsize = textsize;
+        }
+        lastcomputedcount += 1;
+        if (lastcomputedcount > 5) {
+            dlog("Recomputing same thing more than 5 times. this isn't healthy");
+            return; 
+        }
 
 
         
