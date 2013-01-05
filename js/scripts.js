@@ -12,6 +12,7 @@ var cols = [Infinity, 1345, 1095, 855, 595];
 var colSizes = [1270, 1025, 780, 535, 290];
 currentWidth = 0;
 currentDisplayWidth = 0;
+overflowHack = false;
 
 /*
  We wrap all of this in '(function($) {' so that it's all encapsulated.
@@ -24,11 +25,14 @@ currentDisplayWidth = 0;
 
 (function($) {
     var params = {};
-    var data = {};
+    var data = {
+        scrollPageTimeout: 0,
+    };
     var state = { 
         home: false,
         intransition: false,
         currentPair: {},
+        highlighted: null,
     };
 
     var methods = {
@@ -53,7 +57,7 @@ currentDisplayWidth = 0;
                 'sidebarSelected': 'sidebar-selected',
                 'largeSelected'  : 'large-selected',
                 'sidebarHome'    : '.homelink',
-                'anchorScroll'   : false,         //update page while scrolling
+                'anchorScroll'   : true,         //update page while scrolling
                 'doAnimation'    : false,
                 'homeCallback'   : function() {},
                 'detailsCallback': function() {},
@@ -302,7 +306,13 @@ currentDisplayWidth = 0;
                 selectPair(pair, selectedClass, selectedLargeClass);
                 selected = true; //don't select any more than one
                 //window.location.hash = pair.large.attr("data-anchor");
-                if (params.anchorScroll && !data.autoScrollFlag) updatePage(pair);
+                if (params.anchorScroll && !data.autoScrollFlag) {
+                    clearTimeout(data.scrollPageTimeout)
+                    data.scrollPageTimeout = setTimeout(function() {
+                        if (state.home == false && state.intransition == false && pair == state.highlighted)
+                            updatePage(pair, false);
+                    }, 1000);
+                }
             } else {
                 unselectPair(pair, selectedClass, selectedLargeClass);
             }
@@ -386,6 +396,7 @@ currentDisplayWidth = 0;
 **/
 $(function() {
     fixHeader();
+    fixHomeOverflow();
     var recheckTopbar = setupTopBar();
     watchColumns(function() { recheckTopbar(true) });
     var recheckFluidHeader = fluidHeader();
@@ -403,7 +414,16 @@ $(function() {
         "homeCallback": wentHome,
         "detailsCallback": wentDetails,
     });
-    fluidImages();
+    var fluidimgs = fluidImages();
+    recheckSite(fluidimgs, recheckFluidHeader);
+});
+$(window).load(function() {
+    $('.flexslider').flexslider({
+        slideshow: false,
+        controlNav: true,
+        smoothHeight: false,
+    });
+    removeImageHeights();
 });
 
 
@@ -489,6 +509,7 @@ var setupTopBar = function() {
         if ($().fancynav("state").home == false) return;
         dlog("Tiles scroll");
         var top = tiles.scrollTop();
+        if (overflowHack) top = $(window).scrollTop();
         if (top <= 0) {
             topBarFixed(top);
         } else {
@@ -518,9 +539,13 @@ var setupTopBar = function() {
     tiles.scroll(checkScrollTiles);
     $(window).scroll(function() {
         checkScrollWindow();
+        if (overflowHack) //well now it might be the tiles too
+            checkScrollTiles();
     });
     document.addEventListener('touchmove', function(event) {
         checkScrollWindow();
+        if (overflowHack) //well now it might be the tiles too
+            checkScrollTiles();
     }, false);
 
 
@@ -623,6 +648,7 @@ var fixHeader = function() {
 
 var fluidHeader = function() {
     var header = $(".header-wrapper");
+    var lastwidth = 0;
     var fluid = function() {
         var width = $(window).width();
 
@@ -637,11 +663,13 @@ var fluidHeader = function() {
 
 
         } else if ($().fancynav("state").home) {
-            header.stop(true, false).animate({"width":currentWidth}, 300);
+            if (currentWidth != lastwidth) header.stop(true, false).animate({"width":currentWidth}, 300);
             //dlog("Resizing to "+currentWidth);
+            lastwidth = currentWidth;
         } else {
-            header.stop(true, false).animate({"width":currentDisplayWidth}, 300);
+            if (currentDisplayWidth != lastwidth) header.stop(true, false).animate({"width":currentDisplayWidth}, 300);
             dlog("Resizing to "+width);
+            lastwidth = currentDisplayWidth;
         }
 
 
@@ -674,25 +702,107 @@ var isMobile = function() {
 var fluidImages = function() {
     var header = $("header");
     var sampleelem = $(".large-element-inner:first");
-    var setmaxheight = function() {
+    var lastwidth = 0;
+    var elements = $(".large-element-inner");
+    var setmaxheight = function(setheight) {
         var height = $(window).height();
         var padding = header.height() + 30;
         var maxheight = height-padding;
         var maxheight = Math.max(maxheight, 250);
         var maxwidth = maxheight * 1.5;
+
         maxwidth = Math.min(maxwidth, 1210);
         if (isMobile()) {
-            $(".large-element-inner").css("max-width","100%");
+            elements.css("max-width","100%");
             currentDisplayWidth = $(window).width();
         } else {
-            $(".large-element-inner").css("max-width",maxwidth+"px");
+            if (lastwidth != maxwidth) elements.css("max-width",maxwidth+"px");
             var samplesize = sampleelem.width();
             if (samplesize <= 0) samplesize = maxwidth;
             currentDisplayWidth = Math.min(samplesize+60,maxwidth+60);
         }
+
+        if (setheight) {
+            $(".preset1-5").css("height",maxheight+"px");
+        }
+        lastwidth = maxwidth;
     };
 
     $(window).resize(setmaxheight);
-    setmaxheight();
+    setmaxheight(true);
+
+    return setmaxheight;
+};
+
+var removeImageHeights = function() {
+    //$(".preset1-5").css("height","auto");
+};
+
+var recheckSite = function(setmaxheight, rechecktopbar) {
+    var recheck = function() {
+        setmaxheight();
+        rechecktopbar();
+    };
+
+    setInterval(recheck, 2000);
 
 };
+
+
+var fixHomeOverflow = function() {
+    if (!weKnowOverflowWorks()) {
+        dlog("Enabling overflow scrolling");
+        $(".tiles").css({"position":"relative","overflow":"auto"});
+        overflowHack = true;
+    } else {
+        dlog("Not enabling overflow scrolling");
+        overflowHack = false;
+    }
+};
+
+//grabbed from https://github.com/filamentgroup/Overthrow/
+var weKnowOverflowWorks = function() {
+    // Touch events are used in the polyfill, and thus are a prerequisite
+    var canBeFilledWithPoly = "ontouchmove" in document;
+    
+    // The following attempts to determine whether the browser has native overflow support
+    // so we can enable it but not polyfill
+        // Features-first. iOS5 overflow scrolling property check - no UA needed here. thanks Apple :)
+    if ("WebkitOverflowScrolling" in document.documentElement.style) return true;
+        // Touch events aren't supported and screen width is greater than X
+        // ...basically, this is a loose "desktop browser" check. 
+        // It may wrongly opt-in very large tablets with no touch support.
+    if ( !canBeFilledWithPoly && window.screen.width > 1200 ) return true;
+        // Hang on to your hats.
+        // Whitelist some popular, overflow-supporting mobile browsers for now and the future
+        // These browsers are known to get overlow support right, but give us no way of detecting it.
+    if ((function(){
+            var ua = window.navigator.userAgent,
+                // Webkit crosses platforms, and the browsers on our list run at least version 534
+                webkit = ua.match( /AppleWebKit\/([0-9]+)/ ),
+                wkversion = webkit && webkit[1],
+                wkLte534 = webkit && wkversion >= 534;
+                
+            return (
+                /* Android 3+ with webkit gte 534
+                ~: Mozilla/5.0 (Linux; U; Android 3.0; en-us; Xoom Build/HRI39) AppleWebKit/534.13 (KHTML, like Gecko) Version/4.0 Safari/534.13 */
+                ua.match( /Android ([0-9]+)/ ) && RegExp.$1 >= 3 && wkLte534 ||
+                /* Blackberry 7+ with webkit gte 534
+                ~: Mozilla/5.0 (BlackBerry; U; BlackBerry 9900; en-US) AppleWebKit/534.11+ (KHTML, like Gecko) Version/7.0.0 Mobile Safari/534.11+ */
+                ua.match( / Version\/([0-9]+)/ ) && RegExp.$1 >= 0 && window.blackberry && wkLte534 ||
+                /* Blackberry Playbook with webkit gte 534
+                ~: Mozilla/5.0 (PlayBook; U; RIM Tablet OS 1.0.0; en-US) AppleWebKit/534.8+ (KHTML, like Gecko) Version/0.0.1 Safari/534.8+ */   
+                ua.indexOf( /PlayBook/ ) > -1 && RegExp.$1 >= 0 && wkLte534 ||
+                /* Firefox Mobile (Fennec) 4 and up
+                ~: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.7; rv:2.1.1) Gecko/ Firefox/4.0.2pre Fennec/4.0. */
+                ua.match( /Fennec\/([0-9]+)/ ) && RegExp.$1 >= 4 ||
+                /* WebOS 3 and up (TouchPad too)
+                ~: Mozilla/5.0 (hp-tablet; Linux; hpwOS/3.0.0; U; en-US) AppleWebKit/534.6 (KHTML, like Gecko) wOSBrowser/233.48 Safari/534.6 TouchPad/1.0 */
+                ua.match( /wOSBrowser\/([0-9]+)/ ) && RegExp.$1 >= 233 && wkLte534 ||
+                /* Nokia Browser N8
+                ~: Mozilla/5.0 (Symbian/3; Series60/5.2 NokiaN8-00/012.002; Profile/MIDP-2.1 Configuration/CLDC-1.1 ) AppleWebKit/533.4 (KHTML, like Gecko) NokiaBrowser/7.3.0 Mobile Safari/533.4 3gpp-gba 
+                ~: Note: the N9 doesn't have native overflow with one-finger touch. wtf */
+                ua.match( /NokiaBrowser\/([0-9\.]+)/ ) && parseFloat(RegExp.$1) === 7.3 && webkit && wkversion >= 533
+            );
+        })()) return true;
+}
