@@ -706,7 +706,7 @@ var fluidImages = function() {
     var elements = $(".large-element-inner");
     var setmaxheight = function(setheight) {
         var height = $(window).height();
-        var padding = header.height() + 30;
+        var padding = header.height() + 50;
         var maxheight = height-padding;
         var maxheight = Math.max(maxheight, 250);
         var maxwidth = maxheight * 1.5;
@@ -722,8 +722,15 @@ var fluidImages = function() {
             currentDisplayWidth = Math.min(samplesize+60,maxwidth+60);
         }
 
+
         if (setheight) {
-            $(".preset1-5").css("height",maxheight+"px");
+            var width = $(window).width();
+            if (isMobile())
+                maxwidth = Math.min(maxwidth, width-60);
+            else
+                maxwidth = Math.min(maxwidth, width-150);
+            maxheight = maxwidth / 1.5;
+            $(".ratio1-5").css("height",maxheight+"px");
         }
         lastwidth = maxwidth;
     };
@@ -735,7 +742,7 @@ var fluidImages = function() {
 };
 
 var removeImageHeights = function() {
-    //$(".preset1-5").css("height","auto");
+    $(".ratio1-5").css("height","");
 };
 
 var recheckSite = function(setmaxheight, rechecktopbar) {
