@@ -331,7 +331,7 @@ overflowHack = false;
             dlog(pair.sidebar.html());
             var itemtop = pair.sidebar.position().top;
             var itemheight = pair.sidebar.height();
-            var containerheight = data.sidebar.height()-headerHeight;
+            var containerheight = data.sidebar.height()-headerHeight-30;
             var itemcenter = itemtop+itemheight;
             var containercenter = containerheight/2;
             var offset = itemcenter - containercenter;
@@ -348,11 +348,11 @@ overflowHack = false;
 
 
             /* shadows stuff */
-            pair.large.children(".shadowbefore, .shadowafter").stop(true,false).fadeTo(300, 0.99);
-            pair.large.animate({"background-color":"#fff"}, 300);
+            pair.large.children(".shadowbefore, .shadowafter").css("opacity", 0.99);
+            pair.large.css({"background-color":"#fff"});
             if (state.highlighted) {
-                state.highlighted.large.children(".shadowbefore, .shadowafter").stop(true,false).fadeTo(300, 0);
-                state.highlighted.large.animate({"background-color":"#f1f1f1"}, 300);
+                state.highlighted.large.children(".shadowbefore, .shadowafter").css("opacity", 0);
+                state.highlighted.large.css({"background-color":"#f1f1f1"});
             }
 
 
@@ -416,6 +416,7 @@ $(function() {
         "detailsCallback": wentDetails,
     });
     recheckSite(fluidimgs, recheckFluidHeader);
+    addClickToTouch();
 });
 $(window).load(function() {
     $('.flexslider').flexslider({
@@ -463,7 +464,8 @@ var setupTopBar = function() {
     var lastdown = false;
     var topBarFixed = function(top) {
         if (attop == false) { 
-            topbar.stop(true).animate({"background-color": "rgba(241,241,241,0.96)", "boxShadowBlur": "0px"}, time);
+            topbar.stop(true).css({"background-color": "rgba(241,241,241,0.96)", "boxShadowBlur": "0px"});
+            //fallback for no css animations topbar.stop(true).animate({"background-color": "rgba(241,241,241,0.96)", "boxShadowBlur": "0px"}, time);
             topbar.css("border-bottom-style", "dotted");
             topbar.css({"top":0});
             attop = true;
@@ -471,7 +473,8 @@ var setupTopBar = function() {
     };
     var topBarHover = function(top) {
         if (attop == true) {
-            topbar.stop(true).animate({"background-color": "rgba(250,250,250,0.96)", "boxShadowBlur":"15px"}, 10); //super quick
+            topbar.stop(true).css({"background-color": "rgba(250,250,250,0.96)", "boxShadowBlur":"15px"}); //super quick
+            //fallback for no css animations topbar.stop(true).animate({"background-color": "rgba(250,250,250,0.96)", "boxShadowBlur":"15px"}, 10); //super quick
             topbar.css("border-bottom-style", "solid");
             attop = false;
         }
@@ -772,6 +775,19 @@ var fixHomeOverflow = function() {
         overflowHack = false;
     }
 };
+
+
+var addClickToTouch = function() {
+    return; //disabling this for now.
+    $(".hovertouch").bind('touchstart', function(e) {
+        //e.preventDefault();
+        $(this).addClass('hover_effect');
+    }).bind("touchend", function() {
+        //e.preventDefault();
+        $(this).removeClass("hover_effect");
+    });
+};
+
 
 //grabbed from https://github.com/filamentgroup/Overthrow/
 var weKnowOverflowWorks = function() {
