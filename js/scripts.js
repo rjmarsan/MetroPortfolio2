@@ -656,18 +656,17 @@ var fluidHeader = function() {
         if (currentColumns == 1) {
             //if (header.css("width") != "100%") {
             //    header.stop(true, false).animate({"width":width}, 300, function() {
-                    header.stop(true, false);
                     header.css("width", "100%");
             //    });
             //}
 
 
         } else if ($().fancynav("state").home) {
-            if (currentWidth != lastwidth) header.stop(true, false).animate({"width":currentWidth}, 300);
+            if (currentWidth != lastwidth) header.css({"width":currentWidth});
             //dlog("Resizing to "+currentWidth);
             lastwidth = currentWidth;
         } else {
-            if (currentDisplayWidth != lastwidth) header.stop(true, false).animate({"width":currentDisplayWidth}, 300);
+            if (currentDisplayWidth != lastwidth) header.css({"width":currentDisplayWidth});
             dlog("Resizing to "+width);
             lastwidth = currentDisplayWidth;
         }

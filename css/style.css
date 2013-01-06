@@ -181,6 +181,10 @@ header {
 }
 .header-wrapper {
     margin: 0 auto;
+    -webkit-transition: width .4s linear;
+    -moz-transition: width .4s linear;
+    -o-transition: width .4s linear;
+    -transition: width .4s linear;
 }
 
     
@@ -207,10 +211,15 @@ header {
     width: 100%;
     height: 100%;
     background-color: rgba(0,153,153,1.0);
-    display: none;
     line-height: 200px;
     text-align: center;
     vertical-align: middle;
+    opacity: 0;
+    -webkit-transition: opacity .2s linear;
+    -moz-transition: opacity .2s linear;
+    -o-transition: opacity .2s linear;
+    -transition: opacity .2s linear;
+    
 }
 .tile-element-text p {
     display: inline-block;
@@ -222,7 +231,7 @@ header {
     vertical-align: middle;
 }
 .tile-element:hover .tile-element-text {
-    display: block;
+    opacity: 1;
 }
 .tile-element {
     display: block;
