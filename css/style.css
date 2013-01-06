@@ -206,18 +206,20 @@ header {
     top: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0,153,153,0.9);
+    background-color: rgba(0,153,153,1.0);
     display: none;
     line-height: 200px;
-    padding: 30px;
     text-align: center;
+    vertical-align: middle;
 }
 .tile-element-text p {
     display: inline-block;
-    font-size: 13px;
-    line-height: 18px;
+    font-size: 14px;
+    line-height: 19px;
     font-weight: 300;
     color: #fff;
+    padding: 0 30px;
+    vertical-align: middle;
 }
 .tile-element:hover .tile-element-text {
     display: block;
