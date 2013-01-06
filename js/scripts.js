@@ -150,7 +150,7 @@ overflowHack = false;
                 actionGoTo(pair, 300, true);
             });
             pair.large.click(function() {
-                actionGoTo(pair, 300, true);
+                //actionGoTo(pair, 300, true);
             });
         });
     };
@@ -400,6 +400,7 @@ $(function() {
     var recheckTopbar = setupTopBar();
     watchColumns(function() { recheckTopbar(true) });
     var recheckFluidHeader = fluidHeader();
+    var fluidimgs = fluidImages();
     var wentHome = function() { 
         recheckTopbar();
         resizeHeader();
@@ -414,7 +415,6 @@ $(function() {
         "homeCallback": wentHome,
         "detailsCallback": wentDetails,
     });
-    var fluidimgs = fluidImages();
     recheckSite(fluidimgs, recheckFluidHeader);
 });
 $(window).load(function() {
@@ -704,7 +704,7 @@ var fluidImages = function() {
     var sampleelem = $(".large-element-inner:first");
     var lastwidth = 0;
     var elements = $(".large-element-inner");
-    var setmaxheight = function(setheight) {
+    var setmaxheight = function() {
         var height = $(window).height();
         var padding = header.height() + 50;
         var maxheight = height-padding;
@@ -723,15 +723,19 @@ var fluidImages = function() {
         }
 
 
-        if (setheight) {
-            var width = $(window).width();
-            if (isMobile())
-                maxwidth = Math.min(maxwidth, width-60);
-            else
-                maxwidth = Math.min(maxwidth, width-150);
-            maxheight = maxwidth / 1.5;
+        var width = $(window).width();
+        if (isMobile())
+            maxwidth = Math.min(maxwidth, width-60);
+        else
+            maxwidth = Math.min(maxwidth, width-150);
+        maxheight = maxwidth / 1.5;
+        var height83 = (maxwidth * 3.0/8.0);
+        if (unsetHeight == false) {
             $(".ratio1-5").css("height",maxheight+"px");
+            $(".ratio8-3").css("height",height83+"px");
         }
+        $(".flex-direction-nav a").css("top",(maxheight/2)+"px");
+        $(".ratio8-3 .flex-direction-nav a").css("top",(height83/2)+"px");
         lastwidth = maxwidth;
     };
 
@@ -741,8 +745,11 @@ var fluidImages = function() {
     return setmaxheight;
 };
 
+var unsetHeight = false;
 var removeImageHeights = function() {
+    unsetHeight = true;
     $(".ratio1-5").css("height","");
+    $(".ratio8-3").css("height","");
 };
 
 var recheckSite = function(setmaxheight, rechecktopbar) {
