@@ -39,6 +39,9 @@ overflowHack = false;
         state : function() {
             return state;
         },
+        setAnimations : function(should) {
+            params.doAnimation = should;
+        },
     };
 
     $.fn.fancynav = function( options ) {
@@ -59,6 +62,7 @@ overflowHack = false;
                 'sidebarHome'    : '.homelink',
                 'anchorScroll'   : true,         //update page while scrolling
                 'doAnimation'    : false,
+                'doAnimationFunc': function() {return params.doAnimation},
                 'homeCallback'   : function() {},
                 'detailsCallback': function() {},
 
@@ -75,6 +79,7 @@ overflowHack = false;
         data.tiles = $(params.tilesQuery);
         data.sidebar = $(params.sidebarQuery);
         data.large = $(params.largeQuery);
+        data.animationLayer = $(params.animationLayer);
 
         /* making a database for all of the elements */
         data.pairs = getPairs($(params.sidebarElems), $(params.tileElems), $(params.largeElems));
@@ -118,7 +123,7 @@ overflowHack = false;
     var setupTiles = function(pairs, animationlayer) {
         $.each(pairs,function(index,pair) {
             pair.tile.click(function() {
-                if (params.doAnimation) {
+                if (params.doAnimationFunc()) {
                     //this is the transition animation
                     var windowtop = $(window).scrollTop();
                     var windowleft = $(window).scrollLeft();
@@ -127,12 +132,12 @@ overflowHack = false;
                     var tilex = tile.offset().left - tile.margin().left - tile.padding().left - windowleft;
                     var tiley = tile.offset().top - tile.margin().top - tile.padding().top - windowtop;
                     var sidex = side.offset().left - side.margin().left - side.padding().left - windowleft;
-                    var sidey = side.offset().top - side.margin().top - side.padding().top - windowtop;
+                    var sidey = side.position().top - side.margin().top - side.padding().top - windowtop + 90;
                     //dlog("tile: ("+tilex+","+tiley+") Sidebar: ("+sidex+","+sidey+")");
                     var clone = pair.tile.clone();
                     //dlog(clone[0].classList);
                     clone.css("position", "absolute");
-                    clone.css("top", tiley+"px");
+                    clone.css("top", (tiley-data.animationLayer.offset().top)+"px");
                     clone.css("left", tilex+"px");
                     animationlayer.append(clone);
                     clone.animate({ 
@@ -141,10 +146,12 @@ overflowHack = false;
                         "width":side.width(),
                         "height":side.height(),
                         "padding":side.css("padding"),
-                        "margin":side.css("margin")
+                        "margin":side.css("margin"),
+                        "border-width":0,
                     }, 500, function() {
-                    }).fadeOut(500, function() {
-                        clone.remove();
+                        clone.fadeOut(500, function() {
+                            clone.remove();
+                        });
                     });
                 }
                 actionGoTo(pair, 300, true);
@@ -344,7 +351,15 @@ overflowHack = false;
             offset = Math.max(0, offset);
             //offset = Math.max(lastitemtop+lastheight, offset);
             dlog("Offset: "+offset);
-            data.sidebar.children(".sidebar-inner").stop(true).animate({"margin-top":-offset},300);
+            /*
+            if (state.intransition) {
+                data.sidebar.children(".sidebar-inner").stop(true, false).delay(5000).animate({"margin-top":-offset},300);
+            } else {
+                data.sidebar.children(".sidebar-inner").stop(true, false).delay(5000).animate({"margin-top":-offset},300);
+            }
+            */
+            data.sidebar.children(".sidebar-inner").stop(true, false).animate({"margin-top":-offset},300);
+            data.animationLayer.stop(true, false).animate({"margin-top":-offset},300);
 
 
             /* shadows stuff */
@@ -398,7 +413,9 @@ $(function() {
     fixHeader();
     fixHomeOverflow();
     var recheckTopbar = setupTopBar();
-    watchColumns(function() { recheckTopbar(true) });
+    watchColumns(function() { 
+        recheckTopbar(true) 
+    });
     var recheckFluidHeader = fluidHeader();
     var fluidimgs = fluidImages();
     var wentHome = function() { 
@@ -414,6 +431,7 @@ $(function() {
     $().fancynav({
         "homeCallback": wentHome,
         "detailsCallback": wentDetails,
+        "doAnimationFunc": function() { return !isMobile() },
     });
     recheckSite(fluidimgs, recheckFluidHeader);
     addClickToTouch();
