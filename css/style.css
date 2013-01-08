@@ -112,7 +112,11 @@ a, a:visited, a:hover, a:link {
     text-decoration: none;
 }
 a:hover {
-    text-decoration: underline;
+    text-decoration: none;
+}
+.link:hover {
+    border-bottom: 1px solid #444;
+    padding-bottom: 3px;
 }
 
 
@@ -376,7 +380,7 @@ header {
     color: #009999;
     text-decoration: none;
     border-bottom: 1px solid #009999;
-    padding-bottom: 1px;
+    padding-bottom: 2px;
 }
 /*
  * jQuery FlexSlider v2.0
@@ -418,7 +422,7 @@ html[xmlns] .slides {display: block;}
 
 /* Direction Nav */
 .flex-direction-nav {*height: 0;}
-.flex-direction-nav a {width: 42px; height: 46px; margin: -30px 0 0; display: block; background: url(../images/arrownext1.png) no-repeat 0 0; position: absolute; top: 50%; z-index: 10; cursor: pointer; text-indent: -9999px; opacity: 0; -webkit-transition: all .3s ease;}
+.flex-direction-nav a {width: 42px; height: 46px; margin: -30px 0 0; display: block; background: url(../images/arrownext1.png) no-repeat 0 0; position: absolute; top: 50%; z-index: 2; cursor: pointer; text-indent: -9999px; opacity: 0; -webkit-transition: all .3s ease;}
 .flex-direction-nav .flex-next {background-image: url(../images/arrownext1.png); right: -36px; }
 .flex-direction-nav .flex-prev {background-image: url(../images/arrowback1.png); left: -36px; }
 .flexslider:hover .flex-next {opacity: 0.8; right: 5px;}

@@ -156,9 +156,9 @@ overflowHack = false;
                 }
                 actionGoTo(pair, 300, true);
             });
-            pair.large.click(function() {
+            //pair.large.click(function() {
                 //actionGoTo(pair, 300, true);
-            });
+            //});
         });
     };
 
