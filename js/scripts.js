@@ -237,6 +237,9 @@ overflowHack = false;
     */
     var pageChange = function(e) {
         var url = window.location.pathname.replace("/","");
+        if (url.toLowerCase() == "resume") {
+            window.location = "files/metro_resume.pdf";
+        }
         //dlog("New hash: "+url);
         var hasgonesomewhere = false;
         if (url) {
